@@ -1,6 +1,7 @@
 package com.tiendaya.models;
 
 import com.tiendaya.models.enums.EstadoVenta;
+import com.tiendaya.models.enums.MetodoPago;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -27,6 +28,10 @@ public class Venta {
 
     @Column(name = "monto_total", nullable = false, precision = 10, scale = 2)
     private BigDecimal montoTotal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "metodo_pago", nullable = false)
+    private MetodoPago metodoPago;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado_venta", nullable = false)
@@ -89,6 +94,10 @@ public class Venta {
         return montoTotal;
     }
 
+    public MetodoPago getMetodoPago() {
+        return metodoPago;
+    }
+
     public EstadoVenta getEstadoVenta() {
         return estadoVenta;
     }
@@ -127,6 +136,10 @@ public class Venta {
 
     public void setMontoTotal(BigDecimal montoTotal) {
         this.montoTotal = montoTotal;
+    }
+
+    public void setMetodoPago(MetodoPago metodoPago) {
+        this.metodoPago = metodoPago;
     }
 
     public void setEstadoVenta(EstadoVenta estadoVenta) {

@@ -1,0 +1,63 @@
+.role-page {
+  min-height: 100vh;
+  background: #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.role-background {
+  width: min(92vw, 900px);
+  aspect-ratio: 1440 / 1024;
+  position: relative;
+  overflow: hidden;
+  background-image: url("../assets/decor/Cajero.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Botones invisibles encima de las tarjetas del fondo */
+.role-hotspot {
+  position: absolute;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: 0.2s ease;
+}
+
+/* Efecto suave al pasar el mouse */
+.role-hotspot:hover {
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65);
+}
+
+
+.hotspot-cliente {
+  left: 7.8%;
+  top: 36.8%;
+  width: 17.6%;
+  height: 23%;
+}
+
+.hotspot-cajero {
+  left: 29.5%;
+  top: 36.8%;
+  width: 17.8%;
+  height: 23%;
+}
+
+.hotspot-delivery {
+  left: 51.6%;
+  top: 36.8%;
+  width: 17.7%;
+  height: 23%;
+}
+
+.hotspot-admin {
+  left: 73.5%;
+  top: 36.8%;
+  width: 16.8%;
+  height: 23%;
+}

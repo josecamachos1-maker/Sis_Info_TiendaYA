@@ -5,12 +5,16 @@ import com.tiendaya.dtos.UpdateVentaDto;
 import com.tiendaya.interfaces.IVentaService;
 import com.tiendaya.models.Pago;
 import com.tiendaya.models.Pedido;
+import com.tiendaya.models.PedidoDetalle;
+import com.tiendaya.models.Producto;
 import com.tiendaya.models.Venta;
+import com.tiendaya.models.enums.EstadoPago;
 import com.tiendaya.models.enums.EstadoPedido;
 import com.tiendaya.models.enums.EstadoVenta;
 import com.tiendaya.repositories.PagoRepository;
 import com.tiendaya.repositories.PedidoRepository;
 import com.tiendaya.repositories.VentaRepository;
+import com.tiendaya.repositories.ProductoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +27,18 @@ public class VentaService implements IVentaService {
     private final VentaRepository ventaRepository;
     private final PedidoRepository pedidoRepository;
     private final PagoRepository pagoRepository;
+    private final ProductoRepository productoRepository;
 
     public VentaService(
             VentaRepository ventaRepository,
             PedidoRepository pedidoRepository,
-            PagoRepository pagoRepository
+            PagoRepository pagoRepository,
+            ProductoRepository productoRepository
     ) {
         this.ventaRepository = ventaRepository;
         this.pedidoRepository = pedidoRepository;
         this.pagoRepository = pagoRepository;
+        this.productoRepository = productoRepository;
     }
 
     @Override
@@ -70,23 +77,40 @@ public class VentaService implements IVentaService {
             throw new IllegalArgumentException("Este pedido ya tiene una venta registrada");
         }
 
+        if (dto.pagoId() == null) {
+            throw new IllegalArgumentException("Para registrar una venta se necesita un pago confirmado");
+        }
+
+        Pago pago = obtenerPagoValido(dto.pagoId(), pedido.getId());
+
+        if (ventaRepository.existsByPagoId(dto.pagoId())) {
+            throw new IllegalArgumentException("Este pago ya está asociado a una venta");
+        }
+
+        if (pago.getMonto().compareTo(pedido.getTotal()) != 0) {
+            throw new IllegalArgumentException("El monto del pago no coincide con el total del pedido");
+        }
+
         Venta venta = new Venta();
 
         venta.setPedido(pedido);
-        venta.setMontoTotal(dto.montoTotal() != null ? dto.montoTotal() : pedido.getTotal());
-        venta.setEstadoVenta(dto.estadoVenta() != null ? dto.estadoVenta() : EstadoVenta.PENDIENTE);
+        venta.setPago(pago);
+
+        // La venta toma el total real del pedido.
+        venta.setMontoTotal(pedido.getTotal());
+
+        // La venta toma el método real del pago.
+        venta.setMetodoPago(pago.getMetodo());
+
+        // Si hay pago confirmado, la venta ya queda completada.
+        venta.setEstadoVenta(EstadoVenta.COMPLETADA);
+
         venta.setComprobante(dto.comprobante());
         venta.setActivo(true);
 
-        if (dto.pagoId() != null) {
-            Pago pago = obtenerPagoValido(dto.pagoId(), pedido.getId());
-
-            if (ventaRepository.existsByPagoId(dto.pagoId())) {
-                throw new IllegalArgumentException("Este pago ya está asociado a una venta");
-            }
-
-            venta.setPago(pago);
-        }
+        // Como la venta ya fue completada, el pedido deja de estar pendiente.
+        pedido.setEstado(EstadoPedido.ENTREGADO);
+        pedidoRepository.save(pedido);
 
         return ventaRepository.save(venta);
     }
@@ -105,39 +129,39 @@ public class VentaService implements IVentaService {
         if (dto.pagoId() != null) {
             Pago pago = obtenerPagoValido(dto.pagoId(), venta.getPedido().getId());
 
-            boolean pagoYaUsadoPorOtraVenta =
-                    ventaRepository.existsByPagoId(dto.pagoId())
-                            && (
-                            venta.getPago() == null
-                                    || !venta.getPago().getId().equals(dto.pagoId())
-                    );
-
-            if (pagoYaUsadoPorOtraVenta) {
+            if (ventaRepository.existsByPagoId(dto.pagoId())
+                    && (venta.getPago() == null || !venta.getPago().getId().equals(dto.pagoId()))) {
                 throw new IllegalArgumentException("Este pago ya está asociado a otra venta");
             }
 
             venta.setPago(pago);
-        }
-
-        if (dto.montoTotal() != null) {
-            venta.setMontoTotal(dto.montoTotal());
-        }
-
-        if (dto.estadoVenta() != null) {
-            venta.setEstadoVenta(dto.estadoVenta());
+            venta.setMetodoPago(pago.getMetodo());
+            venta.setMontoTotal(venta.getPedido().getTotal());
         }
 
         if (dto.comprobante() != null) {
             venta.setComprobante(dto.comprobante());
         }
 
+        if (dto.estadoVenta() != null) {
+            if (dto.estadoVenta() == EstadoVenta.COMPLETADA) {
+                completarVenta(venta);
+            }
+
+            if (dto.estadoVenta() == EstadoVenta.CANCELADA) {
+                cancelarVenta(venta);
+            }
+
+            if (dto.estadoVenta() == EstadoVenta.PENDIENTE) {
+                venta.setEstadoVenta(EstadoVenta.PENDIENTE);
+            }
+        }
+
         if (dto.activo() != null) {
             venta.setActivo(dto.activo());
         }
 
-        Venta ventaActualizada = ventaRepository.save(venta);
-
-        return Optional.of(ventaActualizada);
+        return Optional.of(ventaRepository.save(venta));
     }
 
     @Override
@@ -151,12 +175,9 @@ public class VentaService implements IVentaService {
 
         Venta venta = ventaBuscada.get();
 
-        venta.setEstadoVenta(EstadoVenta.CANCELADA);
-        venta.setActivo(false);
+        cancelarVenta(venta);
 
-        Venta ventaCancelada = ventaRepository.save(venta);
-
-        return Optional.of(ventaCancelada);
+        return Optional.of(ventaRepository.save(venta));
     }
 
     private Pago obtenerPagoValido(Integer pagoId, Integer pedidoId) {
@@ -165,14 +186,74 @@ public class VentaService implements IVentaService {
                         "El pago con id " + pagoId + " no existe"
                 ));
 
-        if (!pago.getActivo()) {
-            throw new IllegalArgumentException("El pago seleccionado está desactivado");
+        if (pago.getPedido() == null) {
+            throw new IllegalArgumentException("El pago no tiene pedido asociado");
         }
 
         if (!pago.getPedido().getId().equals(pedidoId)) {
-            throw new IllegalArgumentException("El pago seleccionado no pertenece al pedido indicado");
+            throw new IllegalArgumentException("El pago no pertenece al pedido seleccionado");
+        }
+
+        if (pago.getEstadoPago() != EstadoPago.CONFIRMADO) {
+            throw new IllegalArgumentException("El pago todavía no está confirmado");
         }
 
         return pago;
+    }
+
+    private void completarVenta(Venta venta) {
+        if (venta.getPago() == null) {
+            throw new IllegalArgumentException("No se puede completar una venta sin pago");
+        }
+
+        if (venta.getPago().getEstadoPago() != EstadoPago.CONFIRMADO) {
+            throw new IllegalArgumentException("No se puede completar la venta porque el pago no está confirmado");
+        }
+
+        venta.setEstadoVenta(EstadoVenta.COMPLETADA);
+        venta.setActivo(true);
+        venta.setMontoTotal(venta.getPedido().getTotal());
+        venta.setMetodoPago(venta.getPago().getMetodo());
+
+        Pedido pedido = venta.getPedido();
+
+        if (pedido.getEstado() != EstadoPedido.CANCELADO) {
+            pedido.setEstado(EstadoPedido.ENTREGADO);
+            pedidoRepository.save(pedido);
+        }
+    }
+
+    private void cancelarVenta(Venta venta) {
+        if (venta.getEstadoVenta() == EstadoVenta.CANCELADA) {
+            return;
+        }
+
+        venta.setEstadoVenta(EstadoVenta.CANCELADA);
+        venta.setActivo(false);
+
+        Pago pago = venta.getPago();
+
+        if (pago != null && pago.getEstadoPago() == EstadoPago.CONFIRMADO) {
+            pago.setEstadoPago(EstadoPago.REEMBOLSADO);
+            pagoRepository.save(pago);
+        }
+
+        Pedido pedido = venta.getPedido();
+
+        if (pedido != null && pedido.getEstado() != EstadoPedido.CANCELADO) {
+            restaurarStockDelPedido(pedido);
+            pedido.setEstado(EstadoPedido.CANCELADO);
+            pedidoRepository.save(pedido);
+        }
+    }
+
+    private void restaurarStockDelPedido(Pedido pedido) {
+        for (PedidoDetalle detalle : pedido.getDetalles()) {
+            Producto producto = detalle.getProducto();
+
+            producto.setStock(producto.getStock() + detalle.getCantidad());
+
+            productoRepository.save(producto);
+        }
     }
 }
