@@ -1,0 +1,26 @@
+.categorias {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 8px;
+}
+
+.categorias::-webkit-scrollbar {
+  display: none;
+}
+
+.categorias button {
+  border: 1px solid #333;
+  background: white;
+  border-radius: 999px;
+  padding: 10px 20px;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.categorias .activa {
+  background: #f08200;
+  color: white;
+  border: none;
+}

@@ -1,0 +1,63 @@
+/* Contenedor principal de la página del cliente */
+.home-cliente {
+  padding-bottom: 100px; 
+  background-color: #ffffff; /* Asegura que el fondo general sea blanco */
+  font-family: 'Inter', sans-serif; /* Cambia la tipografía a una más moderna */
+
+}
+
+/* Cabecera donde está el Logo */
+.cliente-header { 
+  text-align: center;
+  padding: 20px 16px; /* 20px arriba/abajo y 16px a los lados */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+}
+
+/* CAMBIO CLAVE: Cambiamos Flex por Grid para el catálogo */
+.productos-grid {
+  display: grid; /* Activa el modo cuadrícula */
+  grid-template-columns: repeat(2, 1fr); /* Crea exactamente 2 columnas del mismo tamaño (1fr) */
+  gap: 16px; /* Separación uniforme entre las tarjetas */
+  padding: 0 16px; /* Margen interno a los lados para que no toquen los bordes del teléfono */
+
+}
+
+/* El Banner de Novedades (Marrón) */
+.banner-novedades {
+  margin: 24px 16px 16px 16px;
+  padding: 24px;
+  border-radius: 24px;
+  background: #ec7606;
+  color: white;
+  display: flex; /* Alinea el texto y la imagen de los snacks uno al lado del otro */
+  justify-content: space-between; /* Manda el texto a la izquierda y la foto a la derecha */
+  align-items: center;
+  overflow: hidden; /* Corta cualquier cosa que intente salirse de las esquinas redondas */
+ 
+}
+
+/* Estilos extra para que las tarjetas que creaste se vean perfectas dentro del grid */
+.producto-card {
+  background: white;
+  border: 1px solid #eef0f2; /* Un borde gris muy sutil como el de tu Figma */
+  border-radius: 24px; /* Esquinas muy redondeadas */
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); /* Una sombra muy suave que le da profundidad */
+
+}
+
+/* Control para que las imágenes de los productos no se desborden */
+.producto-img-wrapper img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain; /* Hace que la Sprite o Pringles mantengan su forma original sin estirarse feo */
+ 
+}

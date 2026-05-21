@@ -1,0 +1,53 @@
+.searchbar {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  width: 100%;
+  margin: 16px 0;          /* Separa el buscador del título arriba y de las categorías abajo */
+  padding: 0 16px;         /* Evita que la barra choque con los bordes de la pantalla */
+  box-sizing: border-box;
+}
+
+.search-input {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+
+  background: white;
+
+  border: 1px solid #888;
+
+  border-radius: 20px;
+
+  padding: 12px 14px;
+
+  gap: 8px;
+}
+
+.search-input input {
+  border: none;
+
+  outline: none;
+
+  width: 100%;
+
+  background: transparent;
+}
+
+.btn-buscar {
+  border: none;
+
+  background: #f08200;
+
+  color: white;
+
+  padding: 12px 24px;
+
+  border-radius: 18px;
+
+  font-weight: bold;
+}
