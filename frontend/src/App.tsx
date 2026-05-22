@@ -1,13 +1,13 @@
-import { useState } from "react";
-import "./styles/global.css";
-import "./styles/role-selection.css";
-import "./styles/login.css";
+// import { useState } from "react";
+// import "./styles/global.css";
+// import "./styles/role-selection.css";
+// import "./styles/login.css";
 
-import { RoleSelectionPage } from "./pages/RoleSelectionPage";
-import { LoginPage } from "./pages/LoginPage";
-import { DashboardCajeroPage } from "./pages/cajero/DashboardCajeroPage";
+// import { RoleSelectionPage } from "./pages/RoleSelectionPage";
+// import { LoginPage } from "./pages/LoginPage";
+// import { DashboardCajeroPage } from "./pages/cajero/DashboardCajeroPage";
 
-export type RolUsuario = "CLIENTE" | "CAJERO" | "REPARTIDOR" | "ADMINISTRADOR";
+ export type RolUsuario = "CLIENTE" | "CAJERO" | "REPARTIDOR" | "ADMINISTRADOR";
 
 export type UsuarioLogueado = {
   id: number;
@@ -16,25 +16,34 @@ export type UsuarioLogueado = {
   rol: string;
 };
 
+// function App() {
+//   const [rolSeleccionado, setRolSeleccionado] = useState<RolUsuario | null>(null);
+//   const [usuarioLogueado, setUsuarioLogueado] = useState<UsuarioLogueado | null>(null);
+
+//   if (usuarioLogueado?.rol === "CAJERO") {
+//     return <DashboardCajeroPage usuario={usuarioLogueado} />;
+//   }
+
+//   if (rolSeleccionado === null) {
+//     return <RoleSelectionPage onSeleccionarRol={setRolSeleccionado} />;
+//   }
+
+//   return (
+//     <LoginPage
+//       rol={rolSeleccionado}
+//       onVolver={() => setRolSeleccionado(null)}
+//       onLoginCorrecto={setUsuarioLogueado}
+//     />
+//   );
+// }
+
+//  export default App;
+
+import { BuscarProductoPage } from "./pages/cajero/BuscarProductoPage";
+ 
 function App() {
-  const [rolSeleccionado, setRolSeleccionado] = useState<RolUsuario | null>(null);
-  const [usuarioLogueado, setUsuarioLogueado] = useState<UsuarioLogueado | null>(null);
+ return <BuscarProductoPage/>;
 
-  if (usuarioLogueado?.rol === "CAJERO") {
-    return <DashboardCajeroPage usuario={usuarioLogueado} />;
-  }
-
-  if (rolSeleccionado === null) {
-    return <RoleSelectionPage onSeleccionarRol={setRolSeleccionado} />;
-  }
-
-  return (
-    <LoginPage
-      rol={rolSeleccionado}
-      onVolver={() => setRolSeleccionado(null)}
-      onLoginCorrecto={setUsuarioLogueado}
-    />
-  );
 }
 
 export default App;
