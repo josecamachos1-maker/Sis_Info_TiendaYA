@@ -164,13 +164,15 @@ public class CajeroDashboardService implements ICajeroDashboardService {
             alertas.add(new DashboardAlertaDto(
                     "SIN_STOCK",
                     producto.getNombre(),
-                    "Producto agotado"
+                    "Producto agotado",
+                    producto.getImageUrl()
             ));
         } else if (producto.getStock() <= 3) {
             alertas.add(new DashboardAlertaDto(
                     "STOCK_BAJO",
                     producto.getNombre(),
-                    "Quedan " + producto.getStock() + " unidades"
+                    "Quedan " + producto.getStock() + " unidades",
+                    producto.getImageUrl()
             ));
         }
 
@@ -181,7 +183,8 @@ public class CajeroDashboardService implements ICajeroDashboardService {
             alertas.add(new DashboardAlertaDto(
                     "POR_VENCER",
                     producto.getNombre(),
-                    "Vence el " + producto.getFechaVencimiento()
+                    "Vence el " + producto.getFechaVencimiento(),
+                    producto.getImageUrl()
             ));
         }
 

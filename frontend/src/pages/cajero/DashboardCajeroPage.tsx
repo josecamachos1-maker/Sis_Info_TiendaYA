@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { VistaCajero } from "../../types/navigation";
 import type { UsuarioLogueado } from "../../App";
 import "../../styles/dashboard-cajero.css";
 import {
@@ -33,8 +34,9 @@ import {
 
 type Props = {
   usuario: UsuarioLogueado;
+  onNavigate: (vista: VistaCajero) => void;
 };
-
+``
 function formatearBolivianos(valor: number) {
   return `Bs. ${Number(valor).toLocaleString("es-BO", {
     minimumFractionDigits: 2,
@@ -119,7 +121,7 @@ function formatearTipoAlerta(tipo: string) {
   return tipos[tipo] || tipo;
 }
 
-export function DashboardCajeroPage({ usuario }: Props) {
+export function DashboardCajeroPage({ usuario, onNavigate }: Props) {
   const [dashboard, setDashboard] = useState<CajeroDashboardResponse | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -181,7 +183,7 @@ export function DashboardCajeroPage({ usuario }: Props) {
         </div>
 
         <nav className="cajero-menu">
-          <button className="menu-item active">
+          <button className="menu-item active" onClick={() => onNavigate("dashboard")}>
             <LayoutDashboard size={22} />
             <span>Dashboard</span>
           </button>
@@ -196,7 +198,7 @@ export function DashboardCajeroPage({ usuario }: Props) {
             <span>Registrar Pedido</span>
           </button>
 
-          <button className="menu-item">
+          <button className="menu-item" onClick={() => onNavigate("buscar-producto")}>
             <Search size={22} />
             <span>Buscar Producto</span>
           </button>
@@ -281,7 +283,7 @@ export function DashboardCajeroPage({ usuario }: Props) {
             </div>
           </button>
 
-          <button className="quick-card buscar">
+          <button className="quick-card buscar" onClick={() => onNavigate("buscar-producto")}>
             <Search size={50} />
             <div>
               <h2>Buscar producto</h2>
@@ -437,8 +439,12 @@ export function DashboardCajeroPage({ usuario }: Props) {
 
                 return (
                   <article className="alerta-item" key={`${alerta.tipo}-${alerta.productoNombre}`}>
-                    <div className={`alerta-icon ${color}`}>
-                      <AlertTriangle size={22} />
+                    <div className={`alerta-icon ${alerta.imageUrl ? "con-imagen" : color}`}>
+                      {alerta.imageUrl ? (
+                        <img src={alerta.imageUrl} alt={alerta.productoNombre} />
+                      ) : (
+                        <AlertTriangle size={22} />
+                      )}
                     </div>
 
                     <div>
