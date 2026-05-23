@@ -64,18 +64,19 @@ public class CajeroDashboardService implements ICajeroDashboardService {
         BigDecimal totalEfectivo = ventas.stream()
                 .filter(venta -> Boolean.TRUE.equals(venta.getActivo()))
                 .filter(venta -> venta.getEstadoVenta() == EstadoVenta.COMPLETADA)
-                .filter(venta -> venta.getMetodoPago() == MetodoPago.EFECTIVO)
                 .filter(venta -> estaEnElDia(venta.getFechaVenta(), inicioDia, finDia))
-                .map(Venta::getMontoTotal)
+                .map(venta -> venta.getMontoEfectivo() != null
+                        ? venta.getMontoEfectivo()
+                        : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalQrTransferencia = ventas.stream()
                 .filter(venta -> Boolean.TRUE.equals(venta.getActivo()))
                 .filter(venta -> venta.getEstadoVenta() == EstadoVenta.COMPLETADA)
-                .filter(venta -> venta.getMetodoPago() == MetodoPago.QR
-                        || venta.getMetodoPago() == MetodoPago.TRANSFERENCIA)
                 .filter(venta -> estaEnElDia(venta.getFechaVenta(), inicioDia, finDia))
-                .map(Venta::getMontoTotal)
+                .map(venta -> venta.getMontoDigital() != null
+                        ? venta.getMontoDigital()
+                        : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         DashboardResumenDto resumen = new DashboardResumenDto(

@@ -188,25 +188,25 @@ export function DashboardCajeroPage({ usuario, onNavigate }: Props) {
             <span>Dashboard</span>
           </button>
 
-          <button className="menu-item">
+          <button className="menu-item" onClick={() => onNavigate("nueva-venta")}>
             <ShoppingCart size={22} />
             <span>Nueva Venta</span>
           </button>
 
-          <button className="menu-item">
-            <ClipboardList size={22} />
-            <span>Registrar Pedido</span>
-          </button>
+          <button className="menu-item" onClick={() => onNavigate("registrar-pedido")}>
+  <ClipboardList size={22} />
+  <span>Registrar Pedido</span>
+</button>
 
           <button className="menu-item" onClick={() => onNavigate("buscar-producto")}>
             <Search size={22} />
             <span>Buscar Producto</span>
           </button>
 
-          <button className="menu-item">
-            <PackageCheck size={22} />
-            <span>Pedidos Pendientes</span>
-          </button>
+          <button className="menu-item" onClick={() => onNavigate("pedidos-pendientes")}>
+  <PackageCheck size={22} />
+  <span>Pedidos Pendientes</span>
+</button>
 
           <button className="menu-item">
             <Users size={22} />
@@ -267,7 +267,7 @@ export function DashboardCajeroPage({ usuario, onNavigate }: Props) {
         </header>
 
         <section className="quick-actions">
-          <button className="quick-card venta">
+          <button className="quick-card venta" onClick={() => onNavigate("nueva-venta")}>
             <ShoppingCart size={48} />
             <div>
               <h2>Nueva venta</h2>
@@ -275,7 +275,7 @@ export function DashboardCajeroPage({ usuario, onNavigate }: Props) {
             </div>
           </button>
 
-          <button className="quick-card delivery">
+          <button className="quick-card delivery" onClick={() => onNavigate("registrar-pedido")}>
             <ShoppingBag size={46} />
             <div>
               <h2>Pedido delivery</h2>
@@ -291,7 +291,7 @@ export function DashboardCajeroPage({ usuario, onNavigate }: Props) {
             </div>
           </button>
 
-          <button className="quick-card caja">
+          <button className="quick-card caja" onClick={() => onNavigate("cierre-caja")}>
             <WalletCards size={48} />
             <div>
               <h2>Cierre de caja</h2>
@@ -417,15 +417,17 @@ export function DashboardCajeroPage({ usuario, onNavigate }: Props) {
                       <p>{formatearMetodoPago(pedido.metodoPago)}</p>
                     </div>
 
-                    <button className="btn-detalle">Ver detalle</button>
+                    <button className="btn-detalle" onClick={() => onNavigate("pedidos-pendientes")}>
+  Ver detalle
+</button>
                   </article>
                 );
               })
             )}
 
-            <button className="ver-todo">
-              Ver todos los pedidos <ChevronRight size={18} />
-            </button>
+            <button className="ver-todo" onClick={() => onNavigate("pedidos-pendientes")}>
+  Ver todos los pedidos <ChevronRight size={18} />
+</button>
           </div>
 
           <div className="panel alertas-panel">

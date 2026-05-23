@@ -168,3 +168,274 @@ export async function obtenerProductos(): Promise<ProductoApi[]> {
     .map((producto: ProductoBackend) => normalizarProducto(producto))
     .filter((producto: ProductoApi) => producto.activo);
 }
+
+export type CreateVentaRapidaDto = {
+  costoEnvio?: number;
+  clienteNombre?: string;
+  observaciones?: string;
+  metodoPago: "EFECTIVO" | "QR" | "TRANSFERENCIA" | "MIXTO";
+  montoRecibido?: number;
+  montoEfectivo?: number;
+  montoDigital?: number;
+  referenciaPago?: string;
+  generarFactura: boolean;
+  nitCi?: string;
+  razonSocial?: string;
+  productos: {
+    productoId: number;
+    cantidad: number;
+  }[];
+};
+
+export async function crearVentaRapida(data: CreateVentaRapidaDto) {
+  const respuesta = await fetch("http://localhost:3000/v1/ventas/rapida", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const resultado = await respuesta.json();
+
+  if (!respuesta.ok) {
+    throw new Error(resultado.mensaje || "No se pudo registrar la venta");
+  }
+
+  return resultado;
+}
+
+export type FacturaResponse = {
+  id: number;
+  ventaId: number;
+  nitCi: string;
+  razonSocial: string;
+  fechaEmision: string;
+  total: number;
+  metodoPago: "EFECTIVO" | "QR" | "TRANSFERENCIA" | "MIXTO";
+  estadoFactura: "EMITIDA" | "ANULADA";
+};
+
+export async function obtenerFacturaPorVenta(ventaId: number): Promise<FacturaResponse> {
+  const respuesta = await fetch(`http://localhost:3000/v1/facturas/venta/${ventaId}`);
+
+  let resultado: any = null;
+
+  try {
+    resultado = await respuesta.json();
+  } catch {
+    resultado = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado?.mensaje ||
+        resultado?.message ||
+        resultado?.error ||
+        "No se pudo obtener la factura"
+    );
+  }
+
+  return resultado;
+}
+
+export type CreatePedidoDto = {
+  clienteId: number;
+  repartidorId?: number;
+  direccionEntrega: string;
+  productos: {
+    productoId: number;
+    cantidad: number;
+  }[];
+};
+
+export async function crearPedido(data: CreatePedidoDto) {
+  const respuesta = await fetch("http://localhost:3000/v1/pedidos", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  let resultado: any = null;
+
+  try {
+    resultado = await respuesta.json();
+  } catch {
+    resultado = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado?.mensaje ||
+        resultado?.message ||
+        resultado?.error ||
+        "No se pudo registrar el pedido"
+    );
+  }
+
+  return resultado;
+}
+
+export type CreatePedidoRapidoDto = {
+  clienteNombre: string;
+  clienteTelefono: string;
+  direccionEntrega: string;
+  referenciaEntrega?: string;
+  zona?: string;
+  observaciones?: string;
+  repartidorId?: number;
+  costoEnvio?: number;
+  productos: {
+    productoId: number;
+    cantidad: number;
+  }[];
+};
+
+export async function crearPedidoRapido(data: CreatePedidoRapidoDto) {
+  const respuesta = await fetch("http://localhost:3000/v1/pedidos/rapido", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  let resultado: any = null;
+
+  try {
+    resultado = await respuesta.json();
+  } catch {
+    resultado = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado?.mensaje ||
+        resultado?.message ||
+        resultado?.error ||
+        "No se pudo registrar el pedido pendiente"
+    );
+  }
+
+  return resultado;
+}
+
+export type PedidoDetalleApi = {
+  id: number;
+  productoId?: number;
+  productoNombre?: string;
+  cantidad: number;
+  precioUnitario: number;
+  subtotal: number;
+};
+
+export type PedidoApi = {
+  id: number;
+  clienteId?: number;
+  clienteNombre?: string;
+  clienteTelefono?: string;
+  repartidorId?: number;
+  repartidorNombre?: string;
+  direccionEntrega: string;
+  total: number;
+  estado: "PENDIENTE" | "EN_PROCESO" | "ENTREGADO" | "CANCELADO";
+  fechaPedido?: string;
+  createdAt?: string;
+  detalles?: PedidoDetalleApi[];
+};
+
+export async function obtenerPedidos(): Promise<PedidoApi[]> {
+  const respuesta = await fetch("http://localhost:3000/v1/pedidos");
+
+  let resultado: any = null;
+
+  try {
+    resultado = await respuesta.json();
+  } catch {
+    resultado = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado?.mensaje ||
+        resultado?.message ||
+        resultado?.error ||
+        "No se pudieron cargar los pedidos"
+    );
+  }
+
+  return resultado;
+}
+
+export async function cancelarPedido(id: number) {
+  const respuesta = await fetch(`http://localhost:3000/v1/pedidos/${id}`, {
+    method: "DELETE",
+  });
+
+  let resultado: any = null;
+
+  try {
+    resultado = await respuesta.json();
+  } catch {
+    resultado = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado?.mensaje ||
+        resultado?.message ||
+        resultado?.error ||
+        "No se pudo cancelar el pedido"
+    );
+  }
+
+  return resultado;
+}
+
+export type ConvertirPedidoVentaDto = {
+  metodoPago: "EFECTIVO" | "QR" | "TRANSFERENCIA" | "MIXTO";
+  montoRecibido?: number;
+  montoEfectivo?: number;
+  montoDigital?: number;
+  referenciaPago?: string;
+  generarFactura: boolean;
+  nitCi?: string;
+  razonSocial?: string;
+};
+
+export async function convertirPedidoEnVenta(
+  pedidoId: number,
+  data: ConvertirPedidoVentaDto
+) {
+  const respuesta = await fetch(
+    `http://localhost:3000/v1/ventas/pedido/${pedidoId}/convertir-venta`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
+
+  let resultado: any = null;
+
+  try {
+    resultado = await respuesta.json();
+  } catch {
+    resultado = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado?.mensaje ||
+        resultado?.message ||
+        resultado?.error ||
+        "No se pudo convertir el pedido en venta"
+    );
+  }
+
+  return resultado;
+}
