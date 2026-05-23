@@ -67,14 +67,14 @@ export function HomeClientePage() {
             precio={producto.precio}
             imagen={producto.imagen}
             disponible={producto.disponible}
-            mostrarDisponibilidad={producto.mostrarDisponibilidad}
+            //mostrarDisponibilidad={producto.mostrarDisponibilidad}
             cantidad={producto.cantidad}
           />
         ))}
 
       </section>
 
-      <NavbarCliente />
+      <NavbarCliente paginaActiva="home" />
 
     </main>
   );
