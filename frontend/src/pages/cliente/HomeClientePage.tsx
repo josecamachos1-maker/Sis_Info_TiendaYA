@@ -5,7 +5,7 @@ import { NavbarCliente } from "../../components/cliente/NavbarCliente";
 import { SearchBar } from "../../components/cliente/SearchBar";
 import { CategoriaTabs } from "../../components/cliente/CategoriaTabs";
 import { ProductoCard } from "../../components/cliente/ProductoCard";
-
+import { Logo } from "../../components/logo";
 export function HomeClientePage() {
 
   const [busqueda, setBusqueda] = useState("");
@@ -41,7 +41,7 @@ export function HomeClientePage() {
     <main className="home-cliente">
 
       <header className="cliente-header">
-        <h1>tiendaYa!</h1>
+        <Logo width="260px" />
       </header>
 
       <SearchBar

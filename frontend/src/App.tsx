@@ -6,7 +6,7 @@ import "./styles/login.css";
 import { RoleSelectionPage } from "./pages/RoleSelectionPage";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardCajeroPage } from "./pages/cajero/DashboardCajeroPage";
-import { HomeClientePage } from "./pages/cliente/HomeClientePage"; //temporal
+import { HomeClientePage } from "./pages/cliente/HomeClientePage"; //temporal*/
 export type RolUsuario = "CLIENTE" | "CAJERO" | "REPARTIDOR" | "ADMINISTRADOR";
 
 export type UsuarioLogueado = {
@@ -35,11 +35,7 @@ function App() {
       onLoginCorrecto={setUsuarioLogueado}
     />
   );
+ 
 }
 
-// function App() { //temporal
-
-//   return <HomeClientePage />;
-
-// }
 export default App;

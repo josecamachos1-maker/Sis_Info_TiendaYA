@@ -39,7 +39,16 @@
   overflow: hidden; /* Corta cualquier cosa que intente salirse de las esquinas redondas */
  
 }
-
+/*boton de ver baner*/
+/* .button-Ver {
+  background: white;
+  color: #ec7606;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+} */
 /* Estilos extra para que las tarjetas que creaste se vean perfectas dentro del grid */
 .producto-card {
   background: white;
