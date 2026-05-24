@@ -4,8 +4,8 @@ import { ProductoCard } from "../../components/cliente/ProductoCard";
 import { Logo } from "../../components/logo";
 import {SearchBar} from "../../components/cliente/SearchBar";
 import { useState } from "react";
-import { View } from "lucide-react";
 import { CategoriaTabs } from "../../components/cliente/CategoriaTabs";
+import { PaginaActualC } from "../../components/cliente/PaginaActualC";
 
 
 export function ProductosClientePage() {
@@ -41,9 +41,7 @@ export function ProductosClientePage() {
         <Logo width="260px" />
       </header>
     
-      <section className="pagina-actual"> 
-       <span>Productos</span>
-      </section>
+      <PaginaActualC titulo="Productos" />
 
      <SearchBar
      busqueda={busqueda}

@@ -1,6 +1,7 @@
 import "../../styles/cliente/home-cliente.css";
 import { useState } from "react";
 
+import { PaginaActualC } from "../../components/cliente/PaginaActualC";
 import { NavbarCliente } from "../../components/cliente/NavbarCliente";
 import { SearchBar } from "../../components/cliente/SearchBar";
 import { CategoriaTabs } from "../../components/cliente/CategoriaTabs";
@@ -43,7 +44,9 @@ export function HomeClientePage() {
       <header className="cliente-header">
         <Logo width="260px" />
       </header>
-
+      
+      <PaginaActualC titulo="Home" />
+      
       <SearchBar
         busqueda={busqueda}
         setBusqueda={setBusqueda}
