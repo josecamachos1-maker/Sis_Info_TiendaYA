@@ -1,0 +1,63 @@
+
+.productos-cliente-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px; /* Ajuste ideal para simular pantalla móvil */
+  margin: 0 auto;
+  padding: 20px 16px 90px 16px; /* Padding inferior extra para que el Navbar fijo no tape contenido */
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #ffffff;
+  min-height: 100vh;
+}
+
+.cliente-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 24px;
+} 
+
+/* 
+   Espaciado General de Componentes*/
+/* Asegura que la barra de búsqueda y las pestañas ocupen todo el ancho con espacio */
+.productos-cliente-page > :not(.productos-grid):not(.cliente-header) {
+  width: 100%;
+  margin-bottom: 16px; 
+}
+
+/* 
+   Cuadrícula de Productos (El Grid de 2 Columnas)
+    */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Crea exactamente 2 columnas iguales */
+  gap: 16px; /* Espaciado entre las tarjetas de productos */
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* ==========================================================================
+   Bonus/Guía: Estilos sugeridos para tus subcomponentes internos
+   ========================================================================== */
+
+/* Si necesitas estilizar el Navbar inferior fijo */
+.productos-cliente-page nav, 
+.navbar-cliente { /* Cambia esto por la clase real de tu <NavbarCliente /> */
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: 70px;
+  background-color: #ffffff;
+  border-top: 1px solid #eeeeee;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+}

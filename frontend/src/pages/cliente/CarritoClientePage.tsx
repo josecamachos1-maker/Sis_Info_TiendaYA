@@ -1,4 +1,4 @@
-import "../../styles/cliente/CarritoClientePage.css";
+import "../../styles/cliente/carrito-cliente.css";
 import { useState } from "react";
 import { Logo } from "../../components/logo";  
 import { NavbarCliente } from "../../components/cliente/NavbarCliente";
@@ -98,7 +98,7 @@ function eliminarProducto(id: number) {
         busqueda={busqueda}
         setBusqueda={setBusqueda}
      />  
-     <p> Combina tu orden con productos adicionales: <span style ={{color:" #5f6164f7"}} ></span></p>
+     <p>  <span style ={{color:" #5f6164f7"}} >Combina tu orden con productos adicionales:</span></p>
 
      <section className="productos-extra">
        {productosExtraFiltrados.map((producto) => (
@@ -112,7 +112,7 @@ function eliminarProducto(id: number) {
         />
        ))}
      </section>
-     <strong>Tu Carrito <span style ={{color:" #0a0a0a"}} ></span></strong>
+     <strong><span style ={{color:" #0a0a0a"}} >Tu Carrito </span></strong>
       {
       productosEnCarrito.length === 0 && (
       <p>Tu carrito está vacío</p>
@@ -136,7 +136,7 @@ function eliminarProducto(id: number) {
     
 
      <strong>Total: Bs. {total}</strong>
-     <p> *no incluye envio <span style ={{color:" #787474ec"}} ></span></p>
+     <p> <span style ={{color:" #787474ec", fontWeight: "lighter" }} > *no incluye envio</span></p>
      <p>Elija el metodo de pago antes del checkout: <span style ={{color:" #787474e0"}} ></span></p>
     
      <div className="metodos-pago">

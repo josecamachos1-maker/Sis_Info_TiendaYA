@@ -1,4 +1,4 @@
-import "../styles/cliente/ProductosClientePage.css";
+import "../../styles/cliente/ProductosClientePage.css";
 import { NavbarCliente } from "../../components/cliente/NavbarCliente";
 import { ProductoCard } from "../../components/cliente/ProductoCard";
 import { Logo } from "../../components/logo";
