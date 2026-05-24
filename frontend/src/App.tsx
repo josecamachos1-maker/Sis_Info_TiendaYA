@@ -5,6 +5,10 @@ import "./styles/login.css";
 import "./styles/dashboard-cajero.css";
 import "./styles/buscar-producto.css";
 
+////////////////////////////////
+import "./styles/clientes.css";
+///////////////////////////////
+
 import { NuevaVentaPage } from "./pages/cajero/NuevaVentaPage";
 import { RoleSelectionPage } from "./pages/RoleSelectionPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -13,6 +17,10 @@ import { BuscarProductoPage } from "./pages/cajero/BuscarProductoPage";
 import { RegistrarPedidoPage } from "./pages/cajero/RegistrarPedidoPage";
 import type { VistaCajero } from "./types/navigation";
 import { PedidosPendientesPage } from "./pages/cajero/PedidosPendientesPage";
+
+////////////////////////
+import { ClientesPage } from "./pages/cajero/ClientesPage";
+///////////////////////
 
 export type RolUsuario = "CLIENTE" | "CAJERO" | "REPARTIDOR" | "ADMINISTRADOR";
 
@@ -63,6 +71,14 @@ if (vistaCajero === "pedidos-pendientes") {
         />
       );
     }
+
+    //////////////////
+    if (vistaCajero === "clientes") {
+     return <ClientesPage 
+     usuario={usuarioLogueado} 
+     onNavigate={setVistaCajero} />;
+   }
+   /////////////////
 
     return (
       <DashboardCajeroPage
