@@ -7,7 +7,14 @@ import {SearchBar} from "../../components/cliente/SearchBar";
 import { ProductoCard } from "../../components/cliente/ProductoCard";/////////////
 import { CarritoItem } from "../../components/cliente/CarritoItem";
 
-export function CarritoClientePage() {
+type Props = {
+  onNavigate: (
+    pagina: string
+  ) => void;
+};
+export function CarritoClientePage({
+  onNavigate
+}: Props ) {
   const [busqueda, setBusqueda] = useState("");
   const productosExtra= [
   {
@@ -183,7 +190,7 @@ function eliminarProducto(id: number) {
      >Checkout</button>
 
      </div>
-     <NavbarCliente paginaActiva="carrito" />
+     <NavbarCliente paginaActiva="carrito" onNavigate={onNavigate} />
     </main> 
     ); 
 }

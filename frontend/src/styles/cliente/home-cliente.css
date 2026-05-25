@@ -1,72 +1,120 @@
-/* Contenedor principal de la página del cliente */
+/* ==========================================================================
+   Contenedor Principal (Layout Mobile First)
+   ========================================================================== */
 .home-cliente {
-  padding-bottom: 100px; 
-  background-color: #ffffff; /* Asegura que el fondo general sea blanco */
-  font-family: 'Inter', sans-serif; /* Cambia la tipografía a una más moderna */
-
-}
-
-/* Cabecera donde está el Logo */
-.cliente-header { 
-  text-align: center;
-  padding: 20px 16px; /* 20px arriba/abajo y 16px a los lados */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px;
-
+  width: 100%;
+  max-width: 480px; /* Al igual que las otras pantallas para simular el celular */
+  margin: 0 auto;
+  padding: 16px 20px 100px 20px;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: #ffffff;
 }
 
-/* CAMBIO CLAVE: Cambiamos Flex por Grid para el catálogo */
-.productos-grid {
-  display: grid; /* Activa el modo cuadrícula */
-  grid-template-columns: repeat(2, 1fr); /* Crea exactamente 2 columnas del mismo tamaño (1fr) */
-  gap: 16px; /* Separación uniforme entre las tarjetas */
-  padding: 0 16px; /* Margen interno a los lados para que no toquen los bordes del teléfono */
-
+.cliente-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
 }
 
-/* El Banner de Novedades (Marrón) */
+/* Evitar que los componentes externos rompan el padding */
+.home-cliente > :not(.cliente-header) {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Banner Novedades (Marrón con bordes redondeados asimétricos)
+   ========================================================================== */
 .banner-novedades {
-  margin: 24px 16px 16px 16px;
-  padding: 24px;
-  border-radius: 24px;
-  background: #ec7606;
-  color: white;
-  display: flex; /* Alinea el texto y la imagen de los snacks uno al lado del otro */
-  justify-content: space-between; /* Manda el texto a la izquierda y la foto a la derecha */
-  align-items: center;
-  overflow: hidden; /* Corta cualquier cosa que intente salirse de las esquinas redondas */
- 
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background-color: #6e4d31; /* El tono marrón cálido del Figma */
+  border-radius: 28px; /* Bordes muy curvos idénticos al diseño */
+  margin: 20px 0;
+  overflow: hidden; /* Corta la imagen si sobresale del radio */
+  box-sizing: border-box;
 }
-/*boton de ver baner*/
-/* .button-Ver {
-  background: white;
-  color: #ec7606;
-  border: none;
-  padding: 10px 20px;
+
+/* Lado izquierdo: Textos y Botón */
+.banner-contenido {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 55%;
+  padding-left: 28px;
+  z-index: 2;
+}
+
+.banner-contenido h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+  letter-spacing: 0.5px;
+}
+
+/* Botón Ovalado "Ver" */
+.btn-banner-ver {
+  background-color: #f09200; /* Naranja corporativo */
+  color: #ffffff;
+  border: 1.5px solid #ffffff; /* Pequeño borde blanco sutil */
   border-radius: 20px;
+  padding: 6px 26px;
+  font-size: 13px;
   font-weight: bold;
   cursor: pointer;
-} */
-/* Estilos extra para que las tarjetas que creaste se vean perfectas dentro del grid */
-.producto-card {
-  background: white;
-  border: 1px solid #eef0f2; /* Un borde gris muy sutil como el de tu Figma */
-  border-radius: 24px; /* Esquinas muy redondeadas */
-  padding: 16px;
+  transition: transform 0.1s ease;
+}
+
+.btn-banner-ver:active {
+  transform: scale(0.95);
+}
+
+/* Lado derecho: Espacio para la imagen flotante */
+.banner-imagen-wrapper {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Si no tienes la imagen con el fondo recortado, puedes usar un clip-path o máscara */
+}
+
+/* ==========================================================================
+   Grilla de Productos (2 Columnas perfectas)
+   ========================================================================== */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Divide la pantalla exactamente a la mitad */
+  gap: 18px 16px; /* Espaciado entre filas y columnas */
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+}
+
+/* Ajustes estructurales genéricos para asegurar que tus <ProductoCard /> hereden el diseño */
+.productos-grid > article {
+  background: #ffffff;
+  border: 1.5px solid #111111; /* Contorno negro del Figma */
+  border-radius: 20px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); /* Una sombra muy suave que le da profundidad */
-
-}
-
-/* Control para que las imágenes de los productos no se desborden */
-.producto-img-wrapper img {
-  width: 100%;
-  height: 120px;
-  object-fit: contain; /* Hace que la Sprite o Pringles mantengan su forma original sin estirarse feo */
- 
+  box-sizing: border-box;
 }

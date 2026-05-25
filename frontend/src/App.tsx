@@ -13,6 +13,13 @@ import { BuscarProductoPage } from "./pages/cajero/BuscarProductoPage";
 import { RegistrarPedidoPage } from "./pages/cajero/RegistrarPedidoPage";
 import type { VistaCajero } from "./types/navigation";
 import { PedidosPendientesPage } from "./pages/cajero/PedidosPendientesPage";
+//cliente
+import { ProductosClientePage } from "./pages/cliente/ProductosClientePage";
+import { CarritoClientePage } from "./pages/cliente/CarritoClientePage";
+import { CheckoutClientePage } from "./pages/cliente/CheckoutClientePage";
+import { PedidosClientePage } from "./pages/cliente/PedidosClientePage";
+import { PerfilClientePage } from "./pages/cliente/PerfilClientePage";
+import { HomeClientePage } from "./pages/cliente/HomeClientePage";
 
 export type RolUsuario = "CLIENTE" | "CAJERO" | "REPARTIDOR" | "ADMINISTRADOR";
 
@@ -27,6 +34,48 @@ function App() {
   const [rolSeleccionado, setRolSeleccionado] = useState<RolUsuario | null>(null);
   const [usuarioLogueado, setUsuarioLogueado] = useState<UsuarioLogueado | null>(null);
   const [vistaCajero, setVistaCajero] = useState<VistaCajero>("dashboard");
+   //cliente
+  const [vistaCliente, setVistaCliente] =useState("home"); 
+   if (usuarioLogueado?.rol === "CLIENTE") {
+
+  if (vistaCliente === "home") {
+    return (
+      <HomeClientePage onNavigate={setVistaCliente} />
+    );
+  }
+
+  if (vistaCliente === "productos") {
+    return (
+      <ProductosClientePage onNavigate={setVistaCliente} />
+    );
+  }
+
+  if (vistaCliente === "carrito") {
+    return (
+      <CarritoClientePage onNavigate={setVistaCliente} />
+    );
+  }
+
+  if (vistaCliente === "checkout") {
+    return (
+      <CheckoutClientePage onNavigate={setVistaCliente} />
+    );
+  }
+
+  if (vistaCliente === "pedidos") {
+    return (
+      <PedidosClientePage onNavigate={setVistaCliente} />
+    );
+  }
+
+  if (vistaCliente === "perfil") {
+    return (
+      <PerfilClientePage onNavigate={setVistaCliente} />
+    );
+  }
+
+}
+ //cajero
 
   if (usuarioLogueado?.rol === "CAJERO") {
     if (vistaCajero === "nueva-venta") {

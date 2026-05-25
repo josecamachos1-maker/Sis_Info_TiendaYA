@@ -6,8 +6,14 @@ import { PaginaActualC } from "../../components/cliente/PaginaActualC";
 import { PedidoCard } from "../../components/cliente/PedidoCard";
 
 import type { Pedido } from "../../types/pedido";
-
-export function PedidosClientePage() {
+type Props = {
+  onNavigate: (
+    pagina: string
+  ) => void;
+};
+export function PedidosClientePage({
+    onNavigate,
+}: Props) {
  const [filtro, setFiltro] = useState("TODOS");
   const pedidos: Pedido[] = [
 
@@ -118,7 +124,7 @@ export function PedidosClientePage() {
 
       </section>
 
-      <NavbarCliente paginaActiva="pedidos" />
+      <NavbarCliente paginaActiva="pedidos" onNavigate={onNavigate} />
 
     </main>
   );

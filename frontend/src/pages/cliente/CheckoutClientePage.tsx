@@ -4,10 +4,15 @@ import { NavbarCliente } from "../../components/cliente/NavbarCliente";
 import { Logo } from "../../components/logo";
 import { PaginaActualC } from "../../components/cliente/PaginaActualC";
 import { useState } from "react";
+type Props = {
+  onNavigate: (
+    pagina: string
+  ) => void;
+};
 
-
-export function CheckoutClientePage() {
-    //const [tipoEntrega, setTipoEntrega] = useState("DELIVERY");
+export function CheckoutClientePage({
+    onNavigate,
+}: Props) {
 
 const [nombre, setNombre] = useState("");
 const [apellido, setApellido] = useState("");
@@ -238,7 +243,7 @@ const totalFinal = total + totalEnvio;
 
       </div>
     
-    <NavbarCliente paginaActiva="Carrito" />
+    <NavbarCliente paginaActiva="Carrito" onNavigate={onNavigate} />
     </main>
   );
 }

@@ -1,7 +1,9 @@
 import "../../styles/cliente/perfil-cliente.css";
 
 import { useState } from "react";
-
+import { NavbarCliente } from "../../components/cliente/NavbarCliente";
+import { Logo } from "../../components/logo";
+import { PaginaActualC } from "../../components/cliente/PaginaActualC";
 import {
   MapPin,
   CreditCard,
@@ -11,24 +13,18 @@ import {
   BadgeCheck,
   UserRound,
 } from "lucide-react";
-
-import { NavbarCliente } from "../../components/cliente/NavbarCliente";
-import { Logo } from "../../components/logo";
-import { PaginaActualC } from "../../components/cliente/PaginaActualC";
-
-export function PerfilClientePage() {
-
-  const [nombre, setNombre] =
-    useState("Juan");
-
-  const [apellido, setApellido] =
-    useState("Pérez");
-
-  const [email, setEmail] =
-    useState("juan@gmail.com");
-
-  const [telefono, setTelefono] =
-    useState("76543210");
+type Props = {
+  onNavigate: (
+    pagina: string
+  ) => void;
+};
+export function PerfilClientePage(
+  { onNavigate }: Props
+) {
+  const [nombre, setNombre] =useState("Juan");
+  const [apellido, setApellido] =useState("Pérez");
+  const [email, setEmail] =useState("juan@gmail.com");
+  const [telefono, setTelefono] =useState("76543210");
 
   function guardarCambios() {
 
@@ -185,7 +181,7 @@ export function PerfilClientePage() {
 
       </footer>
 
-      <NavbarCliente paginaActiva="perfil" />
+      <NavbarCliente paginaActiva="perfil" onNavigate={onNavigate} />
 
     </main>
   );

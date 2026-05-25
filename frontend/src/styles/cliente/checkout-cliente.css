@@ -2,6 +2,7 @@
    Contenedor Principal de la Página
    ========================================================================== */
 .checkout-cliente-page {
+  padding-bottom: 100px;
   display: flex;
   flex-direction: column;
   width: 100%;

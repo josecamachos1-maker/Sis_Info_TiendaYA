@@ -2,6 +2,7 @@
    Contenedor Base Móvil
    ========================================================================== */
 .perfil-cliente-page {
+  padding-bottom: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;

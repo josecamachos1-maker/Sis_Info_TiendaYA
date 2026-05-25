@@ -2,6 +2,7 @@
    Contenedor de la Página Principal
    ========================================================================== */
 .pedidos-cliente {
+  padding-bottom: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;

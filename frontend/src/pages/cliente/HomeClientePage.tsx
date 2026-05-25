@@ -7,7 +7,16 @@ import { SearchBar } from "../../components/cliente/SearchBar";
 import { CategoriaTabs } from "../../components/cliente/CategoriaTabs";
 import { ProductoCard } from "../../components/cliente/ProductoCard";
 import { Logo } from "../../components/logo";
-export function HomeClientePage() {
+
+type Props = {
+  onNavigate: (
+    pagina: string
+  ) => void;
+};
+
+export function HomeClientePage({
+    onNavigate,
+}: Props) {
 
   const [busqueda, setBusqueda] = useState("");
 
@@ -37,6 +46,7 @@ export function HomeClientePage() {
   const productosFiltrados = productos.filter((producto) =>
     producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
+ 
 
   return (
     <main className="home-cliente">
@@ -55,9 +65,13 @@ export function HomeClientePage() {
       <CategoriaTabs />
 
       <section className="banner-novedades">
-        <div>
+        <div className="banner-contenido">
           <h2>¡Novedades!</h2>
-          <button>Ver</button>
+          <button className="btn-banner-ver">Ver</button>
+        </div>
+        <div className="banner-imagen-wrapper">
+          {/* Aquí irá la imagen de los snacks de fondo o como un tag img */}
+          <img src="/decor/ClienteImg/novedades.jpg" alt="Novedades" className="banner-img" />
         </div>
       </section>
 
@@ -77,7 +91,7 @@ export function HomeClientePage() {
 
       </section>
 
-      <NavbarCliente paginaActiva="home" />
+      <NavbarCliente paginaActiva="home" onNavigate={onNavigate} />
 
     </main>
   );

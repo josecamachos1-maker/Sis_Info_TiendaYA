@@ -2,6 +2,7 @@
    Contenedor Principal y Estructura Base
    ========================================================================== */
 .carrito-cliente-page {
+  padding-bottom: 100px;
   display: flex;
   flex-direction: column;
   width: 100%;

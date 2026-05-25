@@ -7,8 +7,14 @@ import { useState } from "react";
 import { CategoriaTabs } from "../../components/cliente/CategoriaTabs";
 import { PaginaActualC } from "../../components/cliente/PaginaActualC";
 
-
-export function ProductosClientePage() {
+type Props = {
+  onNavigate: (
+    pagina: string
+  ) => void;
+};
+export function ProductosClientePage(
+  { onNavigate }: Props
+) {
    const [busqueda, setBusqueda] = useState("");
    const productos = [
     {
@@ -63,7 +69,7 @@ export function ProductosClientePage() {
     ))}
 
       </section>
-     <NavbarCliente paginaActiva="productos" />
+     <NavbarCliente paginaActiva="productos" onNavigate={onNavigate} />
     </main>   
    );
 }
