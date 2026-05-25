@@ -1,200 +1,51 @@
-/* ==========================================================================
-   Contenedor de la Tarjeta del Pedido
-   ========================================================================== */
-.pedido-card-contenedor {
-  border: 1.5px solid #9e9e9e;
-  border-radius: 16px;
-  background-color: #ffffff;
-  overflow: hidden;
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 16px;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+.pedido-stepper-contenedor {
+  margin-top: 15px;
+  padding: 10px 0;
 }
 
-/* ==========================================================================
-   Cabecera Dinámica (Interactiva para abrir/cerrar)
-   ========================================================================== */
-.pedido-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  user-select: none;
-  background-color: #ffffff;
-  transition: background-color 0.2s ease;
-}
-
-/* Cuando el usuario lo abre, la cabecera se vuelve gris como en Figma */
-.pedido-card-contenedor:has(.pedido-detalle) .pedido-card-header {
-  background-color: #dedede;
-  border-bottom: 1px solid #cccccc;
-}
-
-.pedido-card-header strong {
-  font-size: 15px;
-  color: #111111;
-  display: block;
-}
-
-.pedido-fecha {
-  font-size: 11px;
-  color: #666666;
-  margin: 2px 0 0 0;
-}
-
-.pedido-estado {
-  font-size: 14px;
+.stepper-titulo {
   font-weight: bold;
-  color: #008cff; /* Azul por defecto para estados activos */
-}
-
-/* Cambiar color del estado según el texto dinámico (Figma Match) */
-.pedido-card-header:has(span:contains("Entregado")) .pedido-estado {
-  color: #2ca82c;
-}
-.pedido-card-header:has(span:contains("Cancelado")) .pedido-estado {
-  color: #c95d5d;
-}
-
-/* ==========================================================================
-   Cuerpo del Detalle del Pedido
-   ========================================================================== */
-.pedido-detalle {
-  padding: 16px;
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.pedido-tipo {
-  font-size: 13px;
-  font-weight: 500;
-  color: #444444;
-  margin: 0;
-}
-
-/* Lista Interna de Productos */
-.pedido-productos {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border-bottom: 1.5px solid #111111; /* Línea divisoria negra antes del total */
-  padding-bottom: 12px;
-}
-
-.producto-mini {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  color: #222222;
-}
-
-.pedido-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   font-size: 14px;
-  color: #111111;
-  margin-top: -4px;
+  margin-bottom: 10px;
 }
 
-/* ==========================================================================
-   El Stepper de Progreso Mágico (Círculos y Líneas)
-   ========================================================================== */
 .pedido-stepper {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   position: relative;
-  margin: 24px 0 10px 0;
-  padding: 0 4px;
+  gap: 5px;
 }
 
-/* La barra conectora gris del fondo */
-.pedido-stepper::before {
-  content: "";
-  position: absolute;
-  top: 14px; /* Centrado con el círculo de 28px */
-  left: 16px;
-  right: 16px;
-  height: 2px;
-  background-color: #b5b5b5;
-  z-index: 1;
-}
-
-/* Cada estación del proceso */
-.step {
+/* Formato base de cada paso */
+.pedido-stepper .step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  z-index: 2;
-  font-size: 10px;
-  font-weight: 500;
-  color: #555555;
-  width: 60px;
+  flex: 1;
   text-align: center;
-  gap: 6px;
+  font-size: 11px;
+  color: #9ca3af; /* Color gris apagado por defecto */
 }
 
-/* El círculo contenedor del icono */
-.step::before {
-  content: "";
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 28px;
-  height: 28px;
+.pedido-stepper .step .circle {
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background-color: #b5b5b5; /* Gris por defecto (inactivo) */
-  color: #ffffff;
-  font-size: 14px;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-/* Inyectar dinámicamente los emojis correctos de Figma mediante CSS */
-.step:nth-child(1)::before { content: "📤"; }
-.step:nth-child(2)::before { content: "🛒"; }
-.step:nth-child(3)::before { content: "📦"; }
-.step:nth-child(4)::before { content: "🛵"; }
-
-/* Cuando tu lógica de React le clava la clase ".activo" */
-.step.activo::before {
-  background-color: #f09200; /* Naranja radiante de TiendaYa! */
-}
-
-/* El paso actual destacado en color vino/marrón oscuro */
-.step.activo:last-of-type::before {
-  background-color: #8c2c2c;
-}
-
-/* ==========================================================================
-   Botón Inferior Cancelar Pedido
-   ========================================================================== */
-.btn-cancelar {
-  background-color: #c95d5d;
-  color: #ffffff;
-  border: 1.5px solid #8f3b3b;
-  border-radius: 12px;
-  width: fit-content;
-  align-self: flex-end; /* Lo empuja a la derecha del contenedor */
-  padding: 8px 24px;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
   font-weight: bold;
-  font-size: 13px;
-  cursor: pointer;
-  transition: transform 0.1s ease, opacity 0.2s;
-  margin-top: 4px;
+  color: #6b7280;
 }
 
-.btn-cancelar:hover {
-  opacity: 0.95;
+.pedido-stepper .step.activo {
+  color: #ff7a00;
 }
 
-.btn-cancelar:active {
-  transform: scale(0.98);
+.pedido-stepper .step.activo .circle {
+  background-color: #ff7a00;
+  color: white;
 }
