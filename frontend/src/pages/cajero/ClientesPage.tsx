@@ -25,6 +25,7 @@ import {
   Edit,
   Star,
   MessageCircle,
+  Clock,
 } from "lucide-react";
 import type { UsuarioLogueado } from "../../App";
 import type { VistaCajero } from "../../types/navigation";
@@ -174,7 +175,7 @@ export function ClientesPage({ usuario, onNavigate }: Props) {
           </div>
           <div className="cl-header-meta">
             <span className="cl-meta-item"><Calendar size={16} /> {fechaStr}</span>
-            <span className="cl-meta-item"><WalletCards size={16} /> {horaStr}</span>
+            <span className="cl-meta-item"><Clock size={16} /> {horaStr}</span>
             <span className="cl-online"><span className="cl-dot" />Online</span>
           </div>
         </header>

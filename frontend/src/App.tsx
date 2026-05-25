@@ -8,6 +8,7 @@ import "./styles/buscar-producto.css";
 ////////////////////////////////
 import "./styles/clientes.css";
 import "./styles/cierre-de-caja.css";
+import "./styles/reportes.css";
 ///////////////////////////////
 
 import { NuevaVentaPage } from "./pages/cajero/NuevaVentaPage";
@@ -22,6 +23,7 @@ import { PedidosPendientesPage } from "./pages/cajero/PedidosPendientesPage";
 ////////////////////////
 import { ClientesPage } from "./pages/cajero/ClientesPage";
 import { CierreDeCajaPage } from "./pages/cajero/CierreDeCajaPage";
+import { ReportesPage } from "./pages/cajero/ReportesPage";
 ///////////////////////
 
 export type RolUsuario = "CLIENTE" | "CAJERO" | "REPARTIDOR" | "ADMINISTRADOR";
@@ -88,6 +90,14 @@ if (vistaCajero === "pedidos-pendientes") {
       <CierreDeCajaPage 
       usuario={usuarioLogueado} 
       onNavigate={setVistaCajero} />
+    );
+   }
+
+   if (vistaCajero === "reportes") {
+    return (
+    <ReportesPage 
+    usuario={usuarioLogueado} 
+    onNavigate={setVistaCajero} />
     );
    }
    /////////////////
