@@ -7,7 +7,6 @@ import { SearchBar } from "../../components/cliente/SearchBar";
 import { CategoriaTabs } from "../../components/cliente/CategoriaTabs";
 import { ProductoCard } from "../../components/cliente/ProductoCard";
 import { Logo } from "../../components/logo";
-
 type ProductoBackend = {
   id: number;
   nombre: string;
@@ -27,7 +26,38 @@ export function HomeClientePage({ onNavigate, carrito, onActualizarCantidad }: P
   const [busqueda, setBusqueda] = useState("");
   const [productos, setProductos] = useState<ProductoBackend[]>([]);
   const [cargando, setCargando] = useState(false);
+   const banners = [
+  {
+    titulo: "¡Nuevas bebidas!",
+    imagen: "/decor/ClienteImg/novedades.svg",
+  },
+  {
+    titulo: "Snacks más vendidos",
+    imagen: "assets/decor/ClienteImg/novedades.svg",
+  },
+  {
+    titulo: "Ofertas especiales",
+    imagen: "/decor/ClienteImg/novedades.svg",
+  },
+];
 
+const [bannerActual, setBannerActual] = useState(0);
+
+function siguienteBanner() {
+  if (bannerActual === banners.length - 1) {
+    setBannerActual(0);
+  } else {
+    setBannerActual(bannerActual + 1);
+  }
+}
+
+function anteriorBanner() {
+  if (bannerActual === 0) {
+    setBannerActual(banners.length - 1);
+  } else {
+    setBannerActual(bannerActual - 1);
+  }
+}
   useEffect(() => {
     /* CONEXIÓN BACKEND (Instrucciones para el Back):
       - Reemplazar este bloque con una petición Axios o Fetch.
@@ -66,21 +96,29 @@ export function HomeClientePage({ onNavigate, carrito, onActualizarCantidad }: P
       <header className="cliente-header">
         <Logo width="260px" />
       </header>
+      
       <PaginaActualC titulo="Home" />
       
       <SearchBar busqueda={busqueda} setBusqueda={setBusqueda} />
       <CategoriaTabs />
 
       <section className="banner-novedades">
+        <button className="banner-arrow" onClick={anteriorBanner} >
+          ◀
+        </button>
         <div className="banner-contenido">
-          <h2>¡Novedades!</h2>
+          <h2>{banners[bannerActual].titulo}</h2>
           <button className="btn-banner-ver" onClick={() => onNavigate("productos")}>
             Ver
           </button>
         </div>
+
         <div className="banner-imagen-wrapper">
-          <img src="/decor/ClienteImg/novedades.jpg" alt="Novedades" className="banner-img" />
+          <img src={banners[bannerActual].imagen} alt="Novedades" className="banner-img" />
         </div>
+        <button className="banner-arrow" onClick={siguienteBanner}>
+          ▶
+        </button>
       </section>
 
       <section className="productos-grid">
