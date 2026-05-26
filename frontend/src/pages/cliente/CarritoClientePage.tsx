@@ -74,7 +74,7 @@ export function CarritoClientePage({ onNavigate }: Props) {
 
   const irAlFormularioCheckout = () => {
     if (!metodoPago) return;
-    onNavigate("checkout-form");
+    onNavigate("checkout");
   };
 
   return (
