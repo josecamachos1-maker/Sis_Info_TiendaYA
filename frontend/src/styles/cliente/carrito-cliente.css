@@ -2,178 +2,63 @@
    Contenedor Principal y Estructura Base
    ========================================================================== */
 .carrito-cliente-page {
-  padding-bottom: 100px;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 480px; /* Simulación de pantalla móvil */
-  margin: 0 auto;
-  padding: 16px 20px 100px 20px; /* Margen inferior para el Navbar fijo */
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #ffffff;
-  color: #333333;
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding-bottom: 70px;
+  padding: 16px;
 }
 
 .cliente-header {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  background: white;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-bottom: 16px;
 }
 
-/* Títulos de sección */
-.carrito-cliente-page p, 
-.carrito-cliente-page strong {
-  font-size: 15px;
-  margin: 14px 0 8px 0;
-}
-
-/* ==========================================================================
-   Carrusel Horizontal (Combina tu orden con...)
-   ========================================================================== */
-.productos-extra {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto; /* Permite el scroll horizontal */
-  padding-bottom: 8px;
-  width: 100%;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* Scroll fluido en iOS */
-}
-
-/* Ocultar barra de scroll para que se vea más limpio */
-.productos-extra::-webkit-scrollbar {
-  display: none;
-}
-
-/* Asegura que las tarjetas no se encojan dentro del carrusel */
-.productos-extra > * {
-  flex: 0 0 auto;
-  width: 140px; /* Ajusta según el ancho real de tu ProductoCard */
-}
-
-/* ==========================================================================
-   Lista de Productos en el Carrito (Vertical)
-   ========================================================================== */
 .productos-carrito {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 100%;
-  
-  /* Flex-grow hace que use TODO el espacio disponible en el medio */
-  flex-grow: 1; 
-  
-  /* Habilitamos el scroll vertical SOLO para esta sección */
-  overflow-y: auto; 
-  
-  padding-right: 4px; /* Pequeño espacio para que el scroll no pegue a las tarjetas */
-  margin-bottom: 12px;
-  
-  /* Sombra sutil opcional abajo y arriba para avisar que hay más contenido */
-  background: 
-    linear-gradient(white 30%, rgba(255,255,255,0)),
-    linear-gradient(rgba(255,255,255,0), white 70%) 0 100%,
-    radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.05), rgba(0,0,0,0)),
-    radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.05), rgba(0,0,0,0)) 0 100%;
-  background-repeat: no-repeat;
-  background-size: 100% 20px, 100% 20px, 100% 10px, 100% 10px;
-  background-attachment: local, local, scroll, scroll;
+  margin: 16px 0;
 }
 
-/* Estilizar la barra de scroll interno para que sea muy fina y limpia */
-.productos-carrito::-webkit-scrollbar {
-  width: 15px;
-}
-.productos-carrito::-webkit-scrollbar-thumb {
-  background-color: #e0e0e0;
-  border-radius: 10px;
-}
-/* ==========================================================================
-   Sección Total y Checkout
-   ========================================================================== */
-.carrito-cliente-page strong:contains("Total") {
-  font-size: 20px;
-  text-align: right;
-  display: block;
-  margin-top: 16px;
+.productos-extra {
+  margin: 16px 0;
 }
 
-.checkout {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  margin-top: 10px;
-}
-
-.btn-checkout {
-  background-color: #f09200; /* Naranja idéntico a tu Figma */
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 32px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s, opacity 0.2s;
-}
-
-.btn-checkout:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* ==========================================================================
-   Custom Radio Buttons (Métodos de Pago)
-   ========================================================================== */
 .metodos-pago {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin: 12px 0;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
 }
 
 .metodo-item {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  font-size: 15px;
-  color: #787474;
-}
-
-/* Esconder el radio button por defecto de HTML */
-.metodo-item input[type="radio"] {
-  position: absolute;
-  opacity: 0;
+  gap: 8px;
   cursor: pointer;
 }
 
-/* Crear el círculo personalizado desde cero */
-.metodo-item::before {
-  content: "";
-  display: inline-block;
-  width: 22px;
-  height: 22px;
-  border: 3px solid #f09200; /* Borde grueso naranja */
-  border-radius: 50%;
-  margin-right: 12px;
-  box-sizing: border-box;
+.btn-checkout {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
   transition: background 0.2s;
 }
 
-/* Cambiar el fondo cuando está seleccionado (Efecto Radio Button Figma) */
-.metodo-item input[type="radio"]:checked + span {
-  color: #0a0a0a;
-  font-weight: 500;
+.btn-checkout:hover {
+  background: #219a52;
 }
 
-.metodo-item input[type="radio"]:checked::before {
-  /* Si necesitas que cambie de color internamente al marcarlo */
-}
-
-/* Selector CSS moderno para pintar el círculo si el input interno está checked */
-.metodo-item:has(input[type="radio"]:checked)::before {
-  background-color: #f09200;
-  box-shadow: inset 0 0 0 3px #ffffff; /* Crea el efecto de aro interior */
+.btn-checkout:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
 }
