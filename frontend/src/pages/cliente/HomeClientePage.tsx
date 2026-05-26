@@ -18,48 +18,45 @@ type ProductoBackend = {
 
 type Props = {
   onNavigate: (pagina: string) => void;
-  // Estado global del carrito compartido para mantener las cantidades reales
   carrito: Array<{ id: number; cantidad: number }>;
   onActualizarCantidad: (id: number, cambio: number) => void;
 };
 
-export function HomeClientePage({ onNavigate, carrito, onActualizarCantidad }: Props) {
+export function HomeClientePage({ onNavigate, carrito = [], onActualizarCantidad }: Props) {
   const [busqueda, setBusqueda] = useState("");
   const [productos, setProductos] = useState<ProductoBackend[]>([]);
   const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
-    /* CONEXIÓN BACKEND (Instrucciones para el Back):
-      - Reemplazar este bloque con una petición Axios o Fetch.
-      - METODO: GET
-      - END-POINT sugerido: /api/productos/novedades (o el catálogo general filtrado)
-    */
     const obtenerCatalogoHome = async () => {
       try {
         setCargando(true);
-        // const res = await fetch("URL_DEL_BACKEND_AQUI/api/productos/novedades");
-        // const data = await res.json();
-        // setProductos(data);
+        const res = await fetch("http://localhost:3000/v1/productos");
+        const data = await res.json();
+        const productosMapeados = data.map((p: any) => ({
+          id: p.id,
+          nombre: p.nombre,
+          precio: p.precio,
+          imagen: p.imageUrl || "/decor/producto-default.jpg",
+          disponible: p.stock > 0
+        }));
+        setProductos(productosMapeados);
       } catch (error) {
         console.error("Error al conectar con la API de productos:", error);
+        setProductos([]);
       } finally {
         setCargando(false);
       }
     };
 
     obtenerCatalogoHome();
-
-    // DATOS FALSOS TEMPORALES (MOCK DATA)
-    setProductos([
-      { id: 1, nombre: "Coca Cola", precio: 15, imagen: "/decor/coca.jpg", disponible: true },
-      { id: 2, nombre: "Pringles", precio: 18, imagen: "/decor/pringles.jpg", disponible: true },
-      { id: 3, nombre: "Sprite", precio: 12, imagen: "/decor/sprite.jpg", disponible: true },
-    ]);
   }, []);
 
   const productosFiltrados = productos.filter((producto) =>
     producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
+
+  const carritoSeguro = carrito || [];
 
   return (
     <main className="home-cliente">
@@ -88,8 +85,7 @@ export function HomeClientePage({ onNavigate, carrito, onActualizarCantidad }: P
           <p>Cargando productos...</p>
         ) : (
           productosFiltrados.map((producto) => {
-            // Buscamos si el producto ya está en el carrito para mandarle el número exacto
-            const enCarrito = carrito.find((item) => item.id === producto.id);
+            const enCarrito = carritoSeguro.find((item) => item.id === producto.id);
             const cantidadActual = enCarrito ? enCarrito.cantidad : 0;
 
             return (

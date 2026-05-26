@@ -21,43 +21,41 @@ type Props = {
   onActualizarCantidad: (id: number, cambio: number) => void;
 };
 
-export function ProductosClientePage({ onNavigate, carrito, onActualizarCantidad }: Props) {
+export function ProductosClientePage({ onNavigate, carrito = [], onActualizarCantidad }: Props) {
   const [busqueda, setBusqueda] = useState("");
   const [productos, setProductos] = useState<ProductoBackend[]>([]);
   const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
-    /* Instrucciones para el Back:
-      - Reemplazar este bloque con una petición Axios o Fetch.
-      - METODO: GET
-      - END-POINT sugerido: /api/productos (Trae el catálogo completo de la tienda)
-    */
     const obtenerCatalogoCompleto = async () => {
       try {
         setCargando(true);
-        // const res = await fetch("URL_DEL_BACKEND_AQUI/api/productos");
-        // const data = await res.json();
-        // setProductos(data);
+        const res = await fetch("http://localhost:3000/v1/productos");
+        const data = await res.json();
+        const productosMapeados = data.map((p: any) => ({
+          id: p.id,
+          nombre: p.nombre,
+          precio: p.precio,
+          imagen: p.imageUrl || "/decor/producto-default.jpg",
+          disponible: p.stock > 0
+        }));
+        setProductos(productosMapeados);
       } catch (error) {
         console.error("Error al conectar con la API de catálogo completo:", error);
+        setProductos([]);
       } finally {
         setCargando(false);
       }
     };
 
     obtenerCatalogoCompleto();
-
-    // DATOS FALSOS TEMPORALES (MOCK DATA) con IDs agregados
-    setProductos([
-      { id: 1, nombre: "Coca Cola", precio: 15, imagen: "/decor/coca.jpg", disponible: true },
-      { id: 2, nombre: "Pringles", precio: 18, imagen: "/decor/pringles.jpg", disponible: true },
-      { id: 3, nombre: "Sprite", precio: 12, imagen: "/decor/sprite.jpg", disponible: false }, // No disponible
-    ]);
   }, []);
 
   const productosFiltrados = productos.filter((producto) =>
     producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
+
+  const carritoSeguro = carrito || [];
 
   return (
     <main className="productos-cliente-page">
@@ -75,7 +73,7 @@ export function ProductosClientePage({ onNavigate, carrito, onActualizarCantidad
           <p>Cargando productos...</p>
         ) : (
           productosFiltrados.map((producto) => {
-            const enCarrito = carrito.find((item) => item.id === producto.id);
+            const enCarrito = carritoSeguro.find((item) => item.id === producto.id);
             const cantidadActual = enCarrito ? enCarrito.cantidad : 0;
 
             return (
