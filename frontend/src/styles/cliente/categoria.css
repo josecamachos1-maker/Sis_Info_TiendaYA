@@ -29,3 +29,7 @@
   color: #ffffff;
   box-shadow: 0 4px 10px rgba(255, 122, 0, 0.2);
 }
+.categoria-btn.activo {
+  background-color: #f08200;
+  color: white;
+}

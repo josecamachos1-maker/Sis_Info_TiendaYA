@@ -38,9 +38,7 @@
   font-weight: 500;
 }
 
-/* 🔥 ESTADO ACTIVO: Para resaltar la sección donde está parado el usuario */
-/* (Nota: Como en tus páginas le pasas 'paginaActiva="home"', puedes agregar la clase activa desde el CSS 
-   o simplemente disfrutar de este hover que simula el color naranja corporativo al interactuar) */
+
 .navbar-cliente button:hover {
   color: #ff7a00; /* Cambia al naranja brillante de tu logo */
 }
@@ -48,4 +46,11 @@
 .navbar-cliente button:hover svg {
   transform: translateY(-2px); /* Pequeña animación interactiva del icono hacia arriba */
   transition: transform 0.2s ease;
+}
+.navbar-cliente button.activo {
+  color: #f08200;
+}
+
+.navbar-cliente button.activo svg {
+  color: #f08200;
 }

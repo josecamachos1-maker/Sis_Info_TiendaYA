@@ -7,36 +7,39 @@ import { SearchBar } from "../../components/cliente/SearchBar";
 import { CategoriaTabs } from "../../components/cliente/CategoriaTabs";
 import { ProductoCard } from "../../components/cliente/ProductoCard";
 import { Logo } from "../../components/logo";
+import type { ItemCarrito } from "../../types/carrito";
 type ProductoBackend = {
   id: number;
   nombre: string;
   precio: number;
   imagen: string;
   disponible: boolean;
+  categoria: string;
 };
 
 type Props = {
   onNavigate: (pagina: string) => void;
   carrito: Array<{ id: number; cantidad: number }>;
-  onActualizarCantidad: (id: number, cambio: number) => void;
+  onActualizarCantidad: (producto: ItemCarrito, cambio: number) => void;
 };
 
 export function HomeClientePage({ onNavigate, carrito = [], onActualizarCantidad }: Props) {
   const [busqueda, setBusqueda] = useState("");
+  const [categoriaActiva, setCategoriaActiva] = useState("Todas");
   const [productos, setProductos] = useState<ProductoBackend[]>([]);
   const [cargando, setCargando] = useState(false);
    const banners = [
   {
     titulo: "¡Nuevas bebidas!",
-    imagen: "/decor/ClienteImg/novedades.svg",
+    imagen: "/public/novedades.svg",
   },
   {
     titulo: "Snacks más vendidos",
-    imagen: "assets/decor/ClienteImg/novedades.svg",
+    imagen: "/public/novedades.svg",
   },
   {
     titulo: "Ofertas especiales",
-    imagen: "/decor/ClienteImg/novedades.svg",
+    imagen: "/public/novedades.svg",
   },
 ];
 
@@ -68,7 +71,8 @@ function anteriorBanner() {
           nombre: p.nombre,
           precio: p.precio,
           imagen: p.imageUrl || "/decor/producto-default.jpg",
-          disponible: p.stock > 0
+          disponible: p.stock > 0,
+          categoria: p.categoria,
         }));
         setProductos(productosMapeados);
       } catch (error) {
@@ -93,11 +97,14 @@ function anteriorBanner() {
       <header className="cliente-header">
         <Logo width="260px" />
       </header>
+      {/*<strong style={{ color: "#3c0d02", fontWeight: "bold" }}>     BIENVENIDO DE NUEVO!! </strong>*/}
       
-      <PaginaActualC titulo="Home" />
+      <PaginaActualC titulo=" 🏠 Home" />
       
       <SearchBar busqueda={busqueda} setBusqueda={setBusqueda} />
-      <CategoriaTabs />
+      <CategoriaTabs categoriaActiva={categoriaActiva}
+        setCategoriaActiva={setCategoriaActiva}
+        />
 
       <section className="banner-novedades">
         <button className="banner-arrow" onClick={anteriorBanner} >
@@ -137,8 +144,31 @@ function anteriorBanner() {
                 cantidad={cantidadActual}
                 mostrarDisponibilidad={false} 
                 variante="vertical" 
-                onAumentar={() => onActualizarCantidad(producto.id, 1)}
-                onDisminuir={() => onActualizarCantidad(producto.id, -1)}
+               onAumentar={() =>
+                  onActualizarCantidad(
+                    {
+                      id: producto.id,
+                      nombre: producto.nombre,
+                      precio: producto.precio,
+                      imagen: producto.imagen,
+                      cantidad: cantidadActual,
+                    },
+                    1
+                  )
+                }
+                
+                onDisminuir={() =>
+                  onActualizarCantidad(
+                    {
+                      id: producto.id,
+                      nombre: producto.nombre,
+                      precio: producto.precio,
+                      imagen: producto.imagen,
+                      cantidad: cantidadActual,
+                    },
+                    -1
+                  )
+                }
               />
             );
           })

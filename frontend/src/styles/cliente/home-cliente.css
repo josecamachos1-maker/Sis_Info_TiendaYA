@@ -23,13 +23,13 @@
 .banner-novedades {
   margin: 20px 16px;
   background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%); /* Degradado naranja pastel del Figma */
-  border-radius: 24px; /* Bordes súper redondeados y suaves */
+  border-radius: 24px; 
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
   position: relative;
-  box-shadow: 0 4px 15px rgba(254, 215, 170, 0.3); /* Sombra suave con tono naranja */
+  box-shadow: 0 4px 15px rgba(254, 215, 170, 0.3); /* Sombra con tono naranja */
   overflow: hidden;
   height: 160px; /* Altura ideal fija para que se vea estilizado */
 }
@@ -117,7 +117,7 @@
    ========================================== */
 .productos-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columnas exactas por fila como en tu Figma */
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas para celular y 6 laptop */
   gap: 16px;
   padding: 0 16px 20px 16px;
 }
@@ -125,7 +125,7 @@
 .cargando-texto {
   grid-column: span 2;
   text-align: center;
-  color: #64748b;
+  color: #8b8364;
   font-size: 14px;
   padding: 20px;
 }
