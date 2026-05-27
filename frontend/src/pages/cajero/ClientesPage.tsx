@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -8,7 +8,6 @@ import {
   Users,
   WalletCards,
   BarChart3,
-  Settings,
   LogOut,
   Plus,
   Eye,
@@ -29,12 +28,18 @@ import {
 } from "lucide-react";
 import type { UsuarioLogueado } from "../../App";
 import type { VistaCajero } from "../../types/navigation";
+import {
+  obtenerClientes,
+  crearCliente,
+  actualizarCliente,
+  type ClienteApi,
+} from "../../services/api";
  
 type Props = {
   usuario: UsuarioLogueado;
   onNavigate: (vista: VistaCajero) => void;
+  onLogout: () => void;
 };
- 
 type EstadoCliente = "Activo" | "Inactivo";
  
 type Cliente = {
@@ -59,17 +64,7 @@ type Venta = {
   pago: "Efectivo" | "Tarjeta";
 };
  
-const CLIENTES_MOCK: Cliente[] = [
-  { id: 1, nombre: "Juan Pérez", telefono: "712 34567", nit: "7250256", ultimaCompra: "20/5/2026", estado: "Activo", tipo: "frecuente", direccion: "Av. América Oeste #1234, Cochabamba", totalCompras: 2450, comprasRealizadas: 12, formaPagoPreferida: "Efectivo", notas: "Prefiere entregas en la mañana." },
-  { id: 2, nombre: "María Camacho", telefono: "703 12345", nit: "6845123", ultimaCompra: "18/5/2026", estado: "Activo", tipo: "frecuente", direccion: "Calle Lanza #456, Cochabamba", totalCompras: 1890, comprasRealizadas: 8, formaPagoPreferida: "Tarjeta" },
-  { id: 3, nombre: "Luis Rojas", telefono: "770 98765", ultimaCompra: "15/5/2026", estado: "Activo", tipo: "normal", direccion: "Av. Blanco Galindo km 3, Cochabamba", totalCompras: 340, comprasRealizadas: 3, formaPagoPreferida: "Efectivo" },
-  { id: 4, nombre: "Sofía Andrade", telefono: "672 33445", nit: "7896541", ultimaCompra: "12/5/2026", estado: "Activo", tipo: "frecuente", direccion: "Av. Heroínas #890, Cochabamba", totalCompras: 3200, comprasRealizadas: 15, formaPagoPreferida: "Tarjeta" },
-  { id: 5, nombre: "Gabriel Condori", telefono: "715 55678", ultimaCompra: "10/5/2026", estado: "Inactivo", tipo: "normal", direccion: "Calle Jordán #12, Cochabamba", totalCompras: 120, comprasRealizadas: 2, formaPagoPreferida: "Efectivo" },
-  { id: 6, nombre: "Verónica Flores", telefono: "681 22331", nit: "8122334", ultimaCompra: "8/5/2026", estado: "Activo", tipo: "frecuente", direccion: "Calle Sucre #78, Cochabamba", totalCompras: 980, comprasRealizadas: 6, formaPagoPreferida: "Tarjeta" },
-  { id: 7, nombre: "Carlos Mamani", telefono: "770 11223", ultimaCompra: "5/5/2026", estado: "Activo", tipo: "nuevo", direccion: "Av. Aroma #55, Cochabamba", totalCompras: 85, comprasRealizadas: 1, formaPagoPreferida: "Efectivo" },
-  { id: 8, nombre: "Andrea Vega", telefono: "712 88990", nit: "5544332", ultimaCompra: "3/5/2026", estado: "Activo", tipo: "frecuente", direccion: "Calle Bolívar #200, Cochabamba", totalCompras: 4100, comprasRealizadas: 20, formaPagoPreferida: "Tarjeta" },
-];
- 
+
 const HISTORIAL_MOCK: Record<number, Venta[]> = {
   1: [
     { fecha: "20/5/2026", detalle: "Venta #V-0002543", total: 180, pago: "Efectivo" },
@@ -105,15 +100,214 @@ function getColorAvatar(nombre: string) {
   for (let i = 0; i < nombre.length; i++) hash += nombre.charCodeAt(i);
   return colores[hash % colores.length];
 }
+
+function adaptarClienteApi(cliente: ClienteApi): Cliente {
+  const fechaCreacion = cliente.createdAt ? new Date(cliente.createdAt) : null;
+  const hoy = new Date();
+
+  const esNuevo =
+    fechaCreacion !== null &&
+    fechaCreacion.getMonth() === hoy.getMonth() &&
+    fechaCreacion.getFullYear() === hoy.getFullYear();
+
+  return {
+    id: cliente.id,
+    nombre: cliente.nombre,
+    telefono: cliente.telefono,
+    nit: undefined,
+    ultimaCompra: cliente.createdAt
+      ? new Date(cliente.createdAt).toLocaleDateString("es-BO")
+      : "-",
+    estado: cliente.activo ? "Activo" : "Inactivo",
+    tipo: esNuevo ? "nuevo" : "normal",
+    direccion: cliente.direccion || "Sin dirección registrada",
+    totalCompras: 0,
+    comprasRealizadas: 0,
+    formaPagoPreferida: "-",
+    notas: "Cliente registrado en el sistema.",
+  };
+}
  
-export function ClientesPage({ usuario, onNavigate }: Props) {
-  const [clientes] = useState<Cliente[]>(CLIENTES_MOCK);
+export function ClientesPage({ usuario, onNavigate, onLogout }: Props) {
   const [busqueda, setBusqueda] = useState("");
   const [filtroActivo, setFiltroActivo] = useState<"Todos" | "Frecuentes" | "Con factura" | "Nuevos">("Todos");
-  const [clienteSeleccionado, setClienteSeleccionado] = useState<Cliente | null>(clientes[0]);
   const [pagina, setPagina] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
- 
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+const [clienteSeleccionado, setClienteSeleccionado] = useState<Cliente | null>(null);
+const [cargando, setCargando] = useState(false);
+const [error, setError] = useState("");
+
+const [mostrarModalNuevo, setMostrarModalNuevo] = useState(false);
+const [guardandoCliente, setGuardandoCliente] = useState(false);
+const [mensajeExito, setMensajeExito] = useState("");
+
+const [nuevoNombre, setNuevoNombre] = useState("");
+const [nuevoTelefono, setNuevoTelefono] = useState("");
+const [nuevaDireccion, setNuevaDireccion] = useState("");
+
+const [mostrarModalEditar, setMostrarModalEditar] = useState(false);
+const [clienteEditando, setClienteEditando] = useState<Cliente | null>(null);
+
+const [editarNombre, setEditarNombre] = useState("");
+const [editarTelefono, setEditarTelefono] = useState("");
+const [editarDireccion, setEditarDireccion] = useState("");
+const [mostrarModalDesactivar, setMostrarModalDesactivar] = useState(false);
+const [clienteDesactivando, setClienteDesactivando] = useState<Cliente | null>(null);
+
+ async function cargarClientes() {
+  try {
+    setCargando(true);
+    setError("");
+
+    const datos = await obtenerClientes();
+    const clientesAdaptados = datos.map(adaptarClienteApi);
+
+    setClientes(clientesAdaptados);
+
+    if (clientesAdaptados.length > 0) {
+      setClienteSeleccionado(clientesAdaptados[0]);
+    } else {
+      setClienteSeleccionado(null);
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError("No se pudieron cargar los clientes.");
+    }
+  } finally {
+    setCargando(false);
+  }
+}
+
+useEffect(() => {
+  cargarClientes();
+}, []);
+
+async function guardarNuevoCliente() {
+  if (!nuevoNombre.trim() || !nuevoTelefono.trim()) {
+    setError("El nombre y el teléfono son obligatorios.");
+    return;
+  }
+
+  
+
+  try {
+    setGuardandoCliente(true);
+    setError("");
+    setMensajeExito("");
+
+    await crearCliente({
+      nombre: nuevoNombre.trim(),
+      telefono: nuevoTelefono.trim(),
+      direccion: nuevaDireccion.trim() || undefined,
+    });
+
+    setNuevoNombre("");
+    setNuevoTelefono("");
+    setNuevaDireccion("");
+    setMostrarModalNuevo(false);
+
+    await cargarClientes();
+
+    setMensajeExito("Cliente registrado correctamente.");
+  } catch (error) {
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError("No se pudo registrar el cliente.");
+    }
+  } finally {
+    setGuardandoCliente(false);
+  }
+}
+
+function abrirModalEditar(cliente: Cliente) {
+  setClienteEditando(cliente);
+  setEditarNombre(cliente.nombre);
+  setEditarTelefono(cliente.telefono);
+  setEditarDireccion(cliente.direccion || "");
+  setError("");
+  setMensajeExito("");
+  setMostrarModalEditar(true);
+}
+
+function abrirModalDesactivar(cliente: Cliente) {
+  setClienteDesactivando(cliente);
+  setError("");
+  setMensajeExito("");
+  setMostrarModalDesactivar(true);
+}
+
+async function guardarEdicionCliente() {
+  if (!clienteEditando) {
+    return;
+  }
+
+  if (!editarNombre.trim() || !editarTelefono.trim()) {
+    setError("El nombre y el teléfono son obligatorios.");
+    return;
+  }
+
+  try {
+    setGuardandoCliente(true);
+    setError("");
+    setMensajeExito("");
+
+    await actualizarCliente(clienteEditando.id, {
+      nombre: editarNombre.trim(),
+      telefono: editarTelefono.trim(),
+      direccion: editarDireccion.trim() || undefined,
+    });
+
+    setMostrarModalEditar(false);
+    setClienteEditando(null);
+
+    await cargarClientes();
+
+    setMensajeExito("Cliente actualizado correctamente.");
+  } catch (error) {
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError("No se pudo actualizar el cliente.");
+    }
+  } finally {
+    setGuardandoCliente(false);
+  }
+}
+
+async function desactivarClienteSeleccionado() {
+  if (!clienteDesactivando) {
+    return;
+  }
+
+  try {
+    setGuardandoCliente(true);
+    setError("");
+    setMensajeExito("");
+
+    await actualizarCliente(clienteDesactivando.id, {
+      activo: false,
+    });
+
+    setMostrarModalDesactivar(false);
+    setClienteDesactivando(null);
+
+    await cargarClientes();
+
+    setMensajeExito("Cliente desactivado correctamente.");
+  } catch (error) {
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError("No se pudo desactivar el cliente.");
+    }
+  } finally {
+    setGuardandoCliente(false);
+  }
+}
   const ahora = new Date();
   const fechaStr = `${ahora.getDate()}/${ahora.getMonth() + 1}/${ahora.getFullYear()}`;
   const horaStr = ahora.toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" });
@@ -131,7 +325,10 @@ export function ClientesPage({ usuario, onNavigate }: Props) {
     });
   }, [clientes, busqueda, filtroActivo]);
  
-  const totalPaginas = Math.ceil(clientesFiltrados.length / ITEMS_POR_PAGINA);
+  const totalPaginas = Math.max(
+  1,
+  Math.ceil(clientesFiltrados.length / ITEMS_POR_PAGINA)
+);
   const clientesPagina = clientesFiltrados.slice((pagina - 1) * ITEMS_POR_PAGINA, pagina * ITEMS_POR_PAGINA);
  
   const historial = clienteSeleccionado ? (HISTORIAL_MOCK[clienteSeleccionado.id] || []) : [];
@@ -157,12 +354,24 @@ export function ClientesPage({ usuario, onNavigate }: Props) {
           <button className="menu-item active" onClick={() => onNavigate("clientes")}><Users size={22} /><span>Clientes</span></button>
           <button className="menu-item" onClick={() => onNavigate("cierre-caja")}><WalletCards size={22} /><span>Cierre de Caja</span></button>
           <button className="menu-item" onClick={() => onNavigate("reportes")}><BarChart3 size={22} /><span>Reportes</span></button>
-          <button className="menu-item" onClick={() => onNavigate("configuracion")}><Settings size={22} /><span>Configuración</span></button>
         </nav>
         <div className="sidebar-user">
           <div className="sidebar-user-icon"><Users size={22} /></div>
           <div><strong>{usuario.nombre}</strong><p>Turno: Mañana</p></div>
-          <LogOut size={18} />
+         <button
+  type="button"
+  onClick={onLogout}
+  style={{
+    border: "none",
+    background: "transparent",
+    color: "#b91c1c",
+    cursor: "pointer",
+    display: "grid",
+    placeItems: "center",
+  }}
+>
+  <LogOut size={18} />
+</button>
         </div>
       </aside>
  
@@ -224,9 +433,16 @@ export function ClientesPage({ usuario, onNavigate }: Props) {
                   <button className="cl-input-clear" onClick={() => setBusqueda("")}><X size={15} /></button>
                 )}
               </div>
-              <button className="cl-btn-nuevo">
-                <Plus size={16} /> Nuevo cliente
-              </button>
+              <button
+  className="cl-btn-nuevo"
+  onClick={() => {
+    setError("");
+    setMensajeExito("");
+    setMostrarModalNuevo(true);
+  }}
+>
+  <Plus size={16} /> Nuevo cliente
+</button>
             </div>
  
             {/* Filtros */}
@@ -240,7 +456,23 @@ export function ClientesPage({ usuario, onNavigate }: Props) {
               ))}
             </div>
  
-            {/* Tabla */}
+            {cargando && (
+  <div style={{ padding: "12px", color: "#475569", fontWeight: 700 }}>
+    Cargando clientes...
+  </div>
+)}
+
+{error && (
+  <div style={{ padding: "12px", color: "#b91c1c", fontWeight: 700 }}>
+    {error}
+  </div>
+)}
+
+{mensajeExito && (
+  <div style={{ padding: "12px", color: "#15803d", fontWeight: 700 }}>
+    {mensajeExito}
+  </div>
+)}
             <div className="cl-tabla-wrap">
               <table className="cl-tabla">
                 <thead>
@@ -288,8 +520,26 @@ export function ClientesPage({ usuario, onNavigate }: Props) {
                       </td>
                       <td>
                         <div className="cl-acciones">
-                          <button className="cl-accion-btn" onClick={(e) => e.stopPropagation()}><Eye size={16} /></button>
-                          <button className="cl-accion-btn" onClick={(e) => e.stopPropagation()}><MoreVertical size={16} /></button>
+                          <button
+  className="cl-accion-btn"
+  onClick={(e) => {
+    e.stopPropagation();
+    setClienteSeleccionado(c);
+  }}
+>
+  <Eye size={16} />
+</button>
+                       <button
+  className="cl-accion-btn"
+  onClick={(e) => {
+    e.stopPropagation();
+    abrirModalDesactivar(c);
+  }}
+  disabled={c.estado === "Inactivo"}
+  title={c.estado === "Inactivo" ? "Cliente ya inactivo" : "Desactivar cliente"}
+>
+  <MoreVertical size={16} />
+</button>
                         </div>
                       </td>
                     </tr>
@@ -382,11 +632,30 @@ export function ClientesPage({ usuario, onNavigate }: Props) {
                 )}
               </div>
  
-              <div className="cl-perfil-acciones">
-                <button className="cl-btn-editar"><Edit size={15} /> Editar</button>
-                <button className="cl-btn-venta-perfil"><ShoppingCart size={15} /> Nueva venta</button>
-              </div>
- 
+             <div className="cl-perfil-acciones">
+  <button
+    className="cl-btn-editar"
+    onClick={() => abrirModalEditar(clienteSeleccionado)}
+  >
+    <Edit size={15} /> Editar
+  </button>
+
+  <button
+    className="cl-btn-venta-perfil"
+    onClick={() => onNavigate("nueva-venta")}
+  >
+    <ShoppingCart size={15} /> Nueva venta
+  </button>
+
+  {clienteSeleccionado.estado === "Activo" && (
+    <button
+      className="cl-btn-desactivar"
+      onClick={() => abrirModalDesactivar(clienteSeleccionado)}
+    >
+      <X size={15} /> Desactivar
+    </button>
+  )}
+</div>
               {/* Historial */}
               <div className="cl-historial-header">
                 <span className="cl-historial-title">Historial reciente</span>
@@ -422,6 +691,225 @@ export function ClientesPage({ usuario, onNavigate }: Props) {
             </aside>
           )}
         </div>
+
+                {mostrarModalNuevo && (
+          <div className="cl-modal-fondo">
+            <div className="cl-modal">
+              <div className="cl-modal-header">
+                <div>
+                  <h2>Nuevo cliente</h2>
+                  <p>Registra la información básica del cliente.</p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setMostrarModalNuevo(false)}
+                  disabled={guardandoCliente}
+                >
+                  <X size={22} />
+                </button>
+              </div>
+
+              <div className="cl-modal-form">
+                <label>
+                  Nombre *
+                  <input
+                    value={nuevoNombre}
+                    onChange={(e) => setNuevoNombre(e.target.value)}
+                    placeholder="Ej: Juan Pérez"
+                  />
+                </label>
+
+                <label>
+                  Teléfono *
+                  <input
+                    value={nuevoTelefono}
+                    onChange={(e) => setNuevoTelefono(e.target.value)}
+                    placeholder="Ej: 71234567"
+                  />
+                </label>
+
+                <label>
+                  Dirección
+                  <textarea
+                    value={nuevaDireccion}
+                    onChange={(e) => setNuevaDireccion(e.target.value)}
+                    placeholder="Ej: Av. América Oeste #1234"
+                    rows={3}
+                  />
+                </label>
+              </div>
+
+              <div className="cl-modal-actions">
+                <button
+                  type="button"
+                  className="cl-modal-btn-cancelar"
+                  onClick={() => setMostrarModalNuevo(false)}
+                  disabled={guardandoCliente}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="cl-modal-btn-guardar"
+                  onClick={guardarNuevoCliente}
+                  disabled={guardandoCliente}
+                >
+                  <Plus size={16} />
+                  {guardandoCliente ? "Guardando..." : "Guardar cliente"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+                {mostrarModalEditar && clienteEditando && (
+          <div className="cl-modal-fondo">
+            <div className="cl-modal">
+              <div className="cl-modal-header">
+                <div>
+                  <h2>Editar cliente</h2>
+                  <p>Actualiza la información registrada del cliente.</p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMostrarModalEditar(false);
+                    setClienteEditando(null);
+                  }}
+                  disabled={guardandoCliente}
+                >
+                  <X size={22} />
+                </button>
+              </div>
+
+              <div className="cl-modal-form">
+                <label>
+                  Nombre *
+                  <input
+                    value={editarNombre}
+                    onChange={(e) => setEditarNombre(e.target.value)}
+                    placeholder="Ej: Juan Pérez"
+                  />
+                </label>
+
+                <label>
+                  Teléfono *
+                  <input
+                    value={editarTelefono}
+                    onChange={(e) => setEditarTelefono(e.target.value)}
+                    placeholder="Ej: 71234567"
+                  />
+                </label>
+
+                <label>
+                  Dirección
+                  <textarea
+                    value={editarDireccion}
+                    onChange={(e) => setEditarDireccion(e.target.value)}
+                    placeholder="Ej: Av. América Oeste #1234"
+                    rows={3}
+                  />
+                </label>
+              </div>
+
+              <div className="cl-modal-actions">
+                <button
+                  type="button"
+                  className="cl-modal-btn-cancelar"
+                  onClick={() => {
+                    setMostrarModalEditar(false);
+                    setClienteEditando(null);
+                  }}
+                  disabled={guardandoCliente}
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  className="cl-modal-btn-guardar"
+                  onClick={guardarEdicionCliente}
+                  disabled={guardandoCliente}
+                >
+                  <Edit size={16} />
+                  {guardandoCliente ? "Guardando..." : "Guardar cambios"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {mostrarModalDesactivar && clienteDesactivando && (
+  <div className="cl-modal-fondo">
+    <div className="cl-modal">
+      <div className="cl-modal-header">
+        <div>
+          <h2>Desactivar cliente</h2>
+          <p>
+            El cliente no se eliminará del historial, solo quedará marcado como inactivo.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            setMostrarModalDesactivar(false);
+            setClienteDesactivando(null);
+          }}
+          disabled={guardandoCliente}
+        >
+          <X size={22} />
+        </button>
+      </div>
+
+      <div className="cl-modal-confirmacion">
+        <div
+          className="cl-perfil-avatar"
+          style={{ background: getColorAvatar(clienteDesactivando.nombre) }}
+        >
+          {getIniciales(clienteDesactivando.nombre)}
+        </div>
+
+        <div>
+          <strong>{clienteDesactivando.nombre}</strong>
+          <p>{clienteDesactivando.telefono}</p>
+          <span>{clienteDesactivando.direccion || "Sin dirección registrada"}</span>
+        </div>
+      </div>
+
+      <div className="cl-modal-alerta">
+        Esta acción no borra pedidos, ventas ni historial. Solo impide tratarlo como cliente activo.
+      </div>
+
+      <div className="cl-modal-actions">
+        <button
+          type="button"
+          className="cl-modal-btn-cancelar"
+          onClick={() => {
+            setMostrarModalDesactivar(false);
+            setClienteDesactivando(null);
+          }}
+          disabled={guardandoCliente}
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          className="cl-modal-btn-desactivar"
+          onClick={desactivarClienteSeleccionado}
+          disabled={guardandoCliente}
+        >
+          <X size={16} />
+          {guardandoCliente ? "Desactivando..." : "Desactivar cliente"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </section>
     </main>
   );

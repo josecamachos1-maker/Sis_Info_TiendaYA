@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -8,7 +8,6 @@ import {
   Users,
   WalletCards,
   BarChart3,
-  Settings,
   LogOut,
   Calendar,
   Clock,
@@ -28,70 +27,162 @@ import {
 } from "lucide-react";
 import type { UsuarioLogueado } from "../../App";
 import type { VistaCajero } from "../../types/navigation";
+import {
+  cerrarCaja,
+  obtenerCierreCaja,
+  type CierreCajaResponse,
+} from "../../services/api";
  
 type Props = {
   usuario: UsuarioLogueado;
   onNavigate: (vista: VistaCajero) => void;
+  onLogout: () => void;
 };
  
-type Movimiento = {
-  fechaHora: string;
-  movimiento: string;
-  metodoPago: "Efectivo" | "QR" | "Mixto" | "Tarjeta";
-  monto: number;
-};
- 
-const MOVIMIENTOS_MOCK: Movimiento[] = [
-  { fechaHora: "23/5/2026 01:20 p. m.", movimiento: "Venta #24", metodoPago: "Efectivo", monto: 30 },
-  { fechaHora: "23/5/2026 12:45 p. m.", movimiento: "Venta #25", metodoPago: "QR", monto: 24 },
-  { fechaHora: "23/5/2026 12:15 p. m.", movimiento: "Pedido #8 convertido", metodoPago: "Mixto", monto: 21 },
-];
- 
-const ICONO_METODO: Record<string, ReactNode> = {
-  Efectivo: <Banknote size={13} color="#16a34a" />,
-  QR: <QrCode size={13} color="#7c3aed" />,
-  Mixto: <Layers size={13} color="#d97706" />,
-  Tarjeta: <WalletCards size={13} color="#2563eb" />,
-};
- 
-const COLOR_METODO: Record<string, string> = {
-  Efectivo: "#dcfce7",
-  QR: "#ede9fe",
-  Mixto: "#fef3c7",
-  Tarjeta: "#dbeafe",
-};
- 
-const COLOR_TEXTO_METODO: Record<string, string> = {
-  Efectivo: "#15803d",
-  QR: "#6d28d9",
-  Mixto: "#b45309",
-  Tarjeta: "#1d4ed8",
-};
  
 function formatBs(valor: number) {
   return `Bs. ${Number(valor).toLocaleString("es-BO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
+
+function formatearMetodoPago(metodo: string) {
+  if (metodo === "EFECTIVO") return "Efectivo";
+  if (metodo === "QR") return "QR";
+  if (metodo === "TRANSFERENCIA") return "Transferencia";
+  if (metodo === "MIXTO") return "Mixto";
+  return metodo || "-";
+}
+
+function obtenerIconoMetodoPago(metodo: string) {
+  if (metodo === "EFECTIVO") return <Banknote size={13} color="#16a34a" />;
+  if (metodo === "QR" || metodo === "TRANSFERENCIA") return <QrCode size={13} color="#7c3aed" />;
+  if (metodo === "MIXTO") return <Layers size={13} color="#d97706" />;
+  return <WalletCards size={13} color="#2563eb" />;
+}
+
+function obtenerColorMetodoPago(metodo: string) {
+  if (metodo === "EFECTIVO") return "#dcfce7";
+  if (metodo === "QR" || metodo === "TRANSFERENCIA") return "#ede9fe";
+  if (metodo === "MIXTO") return "#fef3c7";
+  return "#dbeafe";
+}
+
+function obtenerColorTextoMetodoPago(metodo: string) {
+  if (metodo === "EFECTIVO") return "#15803d";
+  if (metodo === "QR" || metodo === "TRANSFERENCIA") return "#6d28d9";
+  if (metodo === "MIXTO") return "#b45309";
+  return "#1d4ed8";
+}
  
-export function CierreDeCajaPage({ usuario, onNavigate }: Props) {
+export function CierreDeCajaPage({ usuario, onNavigate, onLogout }: Props) {
   const [efectivoContado, setEfectivoContado] = useState("80,00");
   const [observaciones, setObservaciones] = useState("Caja cerrada sin novedades.");
+  const [cierreCaja, setCierreCaja] = useState<CierreCajaResponse | null>(null);
+const [cargando, setCargando] = useState(true);
+const [error, setError] = useState("");
+const [mensajeExito, setMensajeExito] = useState("");
+const [cerrandoCaja, setCerrandoCaja] = useState(false);
+
+const [mostrarModalCierre, setMostrarModalCierre] = useState(false);
+
+useEffect(() => {
+  async function cargarDatosCierre() {
+    try {
+      setCargando(true);
+      setError("");
+
+      const datos = await obtenerCierreCaja();
+      setCierreCaja(datos);
+
+      const montoBaseInicial = 50;
+const efectivoBackend = Number(datos.efectivo || 0);
+const efectivoEsperadoBackend = montoBaseInicial + efectivoBackend;
+
+setEfectivoContado(
+  efectivoEsperadoBackend.toLocaleString("es-BO", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Error inesperado al cargar cierre de caja.");
+      }
+    } finally {
+      setCargando(false);
+    }
+  }
+
+  cargarDatosCierre();
+}, []);
+
+async function confirmarCierreCaja() {
+  try {
+    setCerrandoCaja(true);
+    setError("");
+    setMensajeExito("");
+
+    const cierreGuardado = await cerrarCaja({
+      usuarioId: usuario.id,
+      montoBaseInicial: montoBase,
+      efectivoEsperado,
+      efectivoContado: efectivoContadoNum,
+      diferencia,
+      totalRecaudado,
+      observaciones,
+    });
+
+    setMensajeExito(
+  `Caja cerrada correctamente. Código de cierre #${cierreGuardado.id}`
+);
+
+const datosActualizados = await obtenerCierreCaja();
+setCierreCaja(datosActualizados);
+
+const montoBaseInicial = 50;
+const efectivoBackend = Number(datosActualizados.efectivo || 0);
+const efectivoEsperadoBackend = montoBaseInicial + efectivoBackend;
+
+setEfectivoContado(
+  efectivoEsperadoBackend.toLocaleString("es-BO", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+);
+
+setMostrarModalCierre(false);
+  } catch (error) {
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError("Error inesperado al cerrar caja.");
+    }
+  } finally {
+    setCerrandoCaja(false);
+  }
+}
+
  
   const ahora = new Date();
   const fechaStr = `${ahora.getDate()}/${ahora.getMonth() + 1}/${ahora.getFullYear()}`;
   const horaStr = ahora.toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit" });
  
-  // Datos del turno
-  const efectivo = 78.5;
-  const qr = 24.0;
-  const mixto = 66.5;
-  const envios = 10.0;
-  const descuentos = 0.0;
-  const totalRecaudado = efectivo + qr + mixto + envios - descuentos;
+const efectivo = Number(cierreCaja?.efectivo || 0);
+const qr = Number(cierreCaja?.qrTransferencia || 0);
+const mixto = Number(cierreCaja?.mixto || 0);
+const envios = Number(cierreCaja?.enviosCobrados || 0);
+const descuentos = Number(cierreCaja?.descuentosAplicados || 0);
+const totalRecaudado = Number(cierreCaja?.totalRecaudado || 0);
+const transacciones = Number(cierreCaja?.transacciones || 0);
+const facturasEmitidas = Number(cierreCaja?.facturasEmitidas || 0);
+const pedidosConvertidos = Number(cierreCaja?.pedidosConvertidos || 0);
+const ultimosMovimientos = cierreCaja?.ultimosMovimientos || [];
  
   const montoBase = 50.0;
-  const efectivoEsperado = efectivo;
-  const efectivoContadoNum = parseFloat(efectivoContado.replace(",", ".")) || 0;
-  const diferencia = efectivoContadoNum - efectivoEsperado;
+const efectivoEsperado = montoBase + efectivo;
+const efectivoContadoNum = parseFloat(efectivoContado.replace(",", ".")) || 0;
+const diferencia = efectivoContadoNum - efectivoEsperado;
   const esSobrante = diferencia > 0;
   const esFaltante = diferencia < 0;
   const estadoOk = Math.abs(diferencia) < 5;
@@ -112,12 +203,24 @@ export function CierreDeCajaPage({ usuario, onNavigate }: Props) {
           <button className="menu-item" onClick={() => onNavigate("clientes")}><Users size={22} /><span>Clientes</span></button>
           <button className="menu-item active" onClick={() => onNavigate("cierre-caja")}><WalletCards size={22} /><span>Cierre de Caja</span></button>
           <button className="menu-item" onClick={() => onNavigate("reportes")}><BarChart3 size={22} /><span>Reportes</span></button>
-          <button className="menu-item" onClick={() => onNavigate("configuracion")}><Settings size={22} /><span>Configuración</span></button>
         </nav>
         <div className="sidebar-user">
           <div className="sidebar-user-icon"><Users size={22} /></div>
           <div><strong>{usuario.nombre}</strong><p>Turno: Mañana</p></div>
-          <LogOut size={18} />
+          <button
+  type="button"
+  onClick={onLogout}
+  style={{
+    border: "none",
+    background: "transparent",
+    color: "#b91c1c",
+    cursor: "pointer",
+    display: "grid",
+    placeItems: "center",
+  }}
+>
+  <LogOut size={18} />
+</button>
         </div>
       </aside>
  
@@ -137,6 +240,24 @@ export function CierreDeCajaPage({ usuario, onNavigate }: Props) {
             <span className="cc-online"><span className="cc-dot" />Online</span>
           </div>
         </header>
+
+        {cargando && (
+  <div className="cc-card" style={{ marginTop: 16 }}>
+    Cargando datos del cierre de caja...
+  </div>
+)}
+
+{error && (
+  <div className="cc-card" style={{ marginTop: 16, color: "#b91c1c" }}>
+    {error}
+  </div>
+)}
+
+{mensajeExito && (
+  <div className="cc-card" style={{ marginTop: 16, color: "#15803d" }}>
+    {mensajeExito}
+  </div>
+)}
  
         {/* Stats */}
         <div className="cc-stats">
@@ -151,21 +272,21 @@ export function CierreDeCajaPage({ usuario, onNavigate }: Props) {
             <div className="cc-stat-icon" style={{ background: "#FFF7ED" }}><ShoppingBag size={24} color="#F28C00" /></div>
             <div>
               <div className="cc-stat-label">Transacciones</div>
-              <div className="cc-stat-value">5</div>
+              <div className="cc-stat-value">{transacciones}</div>
             </div>
           </div>
           <div className="cc-stat-card">
             <div className="cc-stat-icon" style={{ background: "#F5F3FF" }}><FileText size={24} color="#8B5CF6" /></div>
             <div>
               <div className="cc-stat-label">Facturas emitidas</div>
-              <div className="cc-stat-value">3</div>
+              <div className="cc-stat-value">{facturasEmitidas}</div>
             </div>
           </div>
           <div className="cc-stat-card">
             <div className="cc-stat-icon" style={{ background: "#EFF6FF" }}><Package size={24} color="#3B82F6" /></div>
             <div>
               <div className="cc-stat-label">Pedidos convertidos</div>
-              <div className="cc-stat-value">2</div>
+              <div className="cc-stat-value">{pedidosConvertidos}</div>
             </div>
           </div>
         </div>
@@ -280,28 +401,46 @@ export function CierreDeCajaPage({ usuario, onNavigate }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {MOVIMIENTOS_MOCK.map((m, i) => (
-                  <tr key={i}>
-                    <td>
-                      <div className="cc-mov-fecha">
-                        <Clock size={13} color="#9ca3af" />
-                        {m.fechaHora}
-                      </div>
-                    </td>
-                    <td>{m.movimiento}</td>
-                    <td>
-                      <span
-                        className="cc-metodo-badge"
-                        style={{ background: COLOR_METODO[m.metodoPago], color: COLOR_TEXTO_METODO[m.metodoPago] }}
-                      >
-                        {ICONO_METODO[m.metodoPago]}
-                        {m.metodoPago}
-                      </span>
-                    </td>
-                    <td className="cc-mov-monto">Bs. {m.monto.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
+  {ultimosMovimientos.length === 0 && (
+    <tr>
+      <td colSpan={4}>No hay movimientos registrados hoy.</td>
+    </tr>
+  )}
+
+  {ultimosMovimientos.map((movimiento, index) => (
+    <tr key={`${movimiento.movimiento}-${index}`}>
+      <td>
+        <div className="cc-mov-fecha">
+          <Clock size={13} color="#9ca3af" />
+          {new Date(movimiento.fechaHora).toLocaleString("es-BO", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+      </td>
+
+      <td>{movimiento.movimiento}</td>
+
+      <td>
+        <span
+          className="cc-metodo-badge"
+          style={{
+            background: obtenerColorMetodoPago(movimiento.metodoPago),
+            color: obtenerColorTextoMetodoPago(movimiento.metodoPago),
+          }}
+        >
+          {obtenerIconoMetodoPago(movimiento.metodoPago)}
+          {formatearMetodoPago(movimiento.metodoPago)}
+        </span>
+      </td>
+
+      <td className="cc-mov-monto">{formatBs(movimiento.monto)}</td>
+    </tr>
+  ))}
+</tbody>
             </table>
             <button className="cc-ver-todos">
               Ver todos los movimientos →
@@ -314,13 +453,110 @@ export function CierreDeCajaPage({ usuario, onNavigate }: Props) {
           <button className="cc-btn-cancelar" onClick={() => onNavigate("dashboard")}>
             <X size={16} /> Cancelar
           </button>
-          <button className="cc-btn-imprimir">
-            <Printer size={16} /> Imprimir resumen
-          </button>
-          <button className="cc-btn-cerrar">
-            <Lock size={16} /> Cerrar caja
-          </button>
+          <button className="cc-btn-imprimir" onClick={() => window.print()}>
+  <Printer size={16} /> Imprimir resumen
+</button>
+          <button
+  className="cc-btn-cerrar"
+  onClick={() => setMostrarModalCierre(true)}
+  disabled={cerrandoCaja}
+>
+  <Lock size={16} />
+  {cerrandoCaja ? "Cerrando..." : "Cerrar caja"}
+</button>
         </div>
+        {mostrarModalCierre && (
+  <div className="cc-modal-fondo">
+    <div className="cc-modal">
+      <div className="cc-modal-header">
+        <div>
+          <h2>Confirmar cierre de caja</h2>
+          <p>Revisa el resumen antes de guardar el cierre del turno.</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setMostrarModalCierre(false)}
+          disabled={cerrandoCaja}
+        >
+          <X size={22} />
+        </button>
+      </div>
+
+      <div className="cc-modal-resumen">
+        <div>
+          <span>Total recaudado</span>
+          <strong>{formatBs(totalRecaudado)}</strong>
+        </div>
+
+        <div>
+          <span>Monto base inicial</span>
+          <strong>{formatBs(montoBase)}</strong>
+        </div>
+
+        <div>
+          <span>Efectivo esperado</span>
+          <strong>{formatBs(efectivoEsperado)}</strong>
+        </div>
+
+        <div>
+          <span>Efectivo contado</span>
+          <strong>{formatBs(efectivoContadoNum)}</strong>
+        </div>
+
+        <div>
+          <span>Diferencia</span>
+          <strong
+            className={
+              esFaltante
+                ? "cc-modal-faltante"
+                : esSobrante
+                ? "cc-modal-sobrante"
+                : "cc-modal-exacto"
+            }
+          >
+            {formatBs(Math.abs(diferencia))}
+          </strong>
+        </div>
+
+        <div>
+          <span>Estado</span>
+          <strong>{estadoOk ? "Listo para cerrar" : "Revisar diferencia"}</strong>
+        </div>
+      </div>
+
+      <div className="cc-modal-observacion">
+        <span>Observaciones</span>
+        <p>{observaciones || "Sin observaciones."}</p>
+      </div>
+
+      <div className="cc-modal-alerta">
+        Una vez confirmado, el cierre quedará registrado en la base de datos.
+      </div>
+
+      <div className="cc-modal-actions">
+        <button
+          type="button"
+          className="cc-modal-btn-cancelar"
+          onClick={() => setMostrarModalCierre(false)}
+          disabled={cerrandoCaja}
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          className="cc-modal-btn-confirmar"
+          onClick={confirmarCierreCaja}
+          disabled={cerrandoCaja}
+        >
+          <Lock size={16} />
+          {cerrandoCaja ? "Guardando..." : "Confirmar cierre"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </section>
     </main>
   );

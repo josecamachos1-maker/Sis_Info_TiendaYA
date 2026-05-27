@@ -40,39 +40,49 @@ function App() {
   const [usuarioLogueado, setUsuarioLogueado] = useState<UsuarioLogueado | null>(null);
   const [vistaCajero, setVistaCajero] = useState<VistaCajero>("dashboard");
 
+  function cerrarSesion() {
+  setUsuarioLogueado(null);
+  setRolSeleccionado(null);
+  setVistaCajero("dashboard");
+}
+
   if (usuarioLogueado?.rol === "CAJERO") {
     if (vistaCajero === "nueva-venta") {
   return (
     <NuevaVentaPage
-      usuario={usuarioLogueado}
-      onNavigate={setVistaCajero}
-    />
+  usuario={usuarioLogueado}
+  onNavigate={setVistaCajero}
+  onLogout={cerrarSesion}
+/>
   );
 }
 if (vistaCajero === "registrar-pedido") {
   return (
     <RegistrarPedidoPage
-      usuario={usuarioLogueado}
-      onNavigate={setVistaCajero}
-    />
+  usuario={usuarioLogueado}
+  onNavigate={setVistaCajero}
+  onLogout={cerrarSesion}
+/>
   );
 }
 
 if (vistaCajero === "pedidos-pendientes") {
   return (
     <PedidosPendientesPage
-      usuario={usuarioLogueado}
-      onNavigate={setVistaCajero}
-    />
+  usuario={usuarioLogueado}
+  onNavigate={setVistaCajero}
+  onLogout={cerrarSesion}
+/>
   );
 }
 
     if (vistaCajero === "buscar-producto") {
       return (
         <BuscarProductoPage
-          usuario={usuarioLogueado}
-          onNavigate={setVistaCajero}
-        />
+  usuario={usuarioLogueado}
+  onNavigate={setVistaCajero}
+  onLogout={cerrarSesion}
+/>
       );
     }
 
@@ -80,33 +90,42 @@ if (vistaCajero === "pedidos-pendientes") {
     if (vistaCajero === "clientes") {
      return (
       <ClientesPage 
-      usuario={usuarioLogueado} 
-      onNavigate={setVistaCajero} />
+  usuario={usuarioLogueado} 
+  onNavigate={setVistaCajero}
+  onLogout={cerrarSesion}
+/>
      );
    }
 
    if (vistaCajero === "cierre-caja") {
     return (
       <CierreDeCajaPage 
-      usuario={usuarioLogueado} 
-      onNavigate={setVistaCajero} />
+  usuario={usuarioLogueado} 
+  onNavigate={setVistaCajero}
+  onLogout={cerrarSesion}
+/>
     );
    }
 
    if (vistaCajero === "reportes") {
     return (
     <ReportesPage 
-    usuario={usuarioLogueado} 
-    onNavigate={setVistaCajero} />
+  usuario={usuarioLogueado} 
+  onNavigate={setVistaCajero}
+  onLogout={cerrarSesion}
+/>
     );
    }
+
+   
    /////////////////
 
     return (
       <DashboardCajeroPage
-        usuario={usuarioLogueado}
-        onNavigate={setVistaCajero}
-      />
+  usuario={usuarioLogueado}
+  onNavigate={setVistaCajero}
+  onLogout={cerrarSesion}
+/>
     );
   }
 

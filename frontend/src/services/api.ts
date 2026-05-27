@@ -439,3 +439,324 @@ export async function convertirPedidoEnVenta(
 
   return resultado;
 }
+
+export type MovimientoCierreCajaApi = {
+  fechaHora: string;
+  movimiento: string;
+  metodoPago: string;
+  monto: number;
+};
+
+export type CierreCajaResponse = {
+  ventasDelDia: number;
+  transacciones: number;
+  facturasEmitidas: number;
+  pedidosConvertidos: number;
+  efectivo: number;
+  qrTransferencia: number;
+  mixto: number;
+  enviosCobrados: number;
+  descuentosAplicados: number;
+  totalRecaudado: number;
+  ultimosMovimientos: MovimientoCierreCajaApi[];
+};
+
+export async function obtenerCierreCaja(): Promise<CierreCajaResponse> {
+  const respuesta = await fetch("http://localhost:3000/v1/cierre-caja");
+
+  let resultado: any = null;
+
+  try {
+    resultado = await respuesta.json();
+  } catch {
+    resultado = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado?.mensaje ||
+        resultado?.message ||
+        resultado?.error ||
+        "No se pudo cargar el cierre de caja"
+    );
+  }
+
+  return resultado;
+}
+
+export type CreateCierreCajaRequest = {
+  usuarioId?: number;
+  montoBaseInicial: number;
+  efectivoEsperado: number;
+  efectivoContado: number;
+  diferencia: number;
+  totalRecaudado: number;
+  observaciones: string;
+};
+
+export type CierreCajaGuardadoResponse = {
+  id: number;
+  fechaCierre: string;
+  ventasDia: number;
+  transacciones: number;
+  facturasEmitidas: number;
+  pedidosConvertidos: number;
+  efectivo: number;
+  qrTransferencias: number;
+  mixto: number;
+  enviosCobrados: number;
+  descuentosAplicados: number;
+  totalRecaudado: number;
+  montoBaseInicial: number;
+  efectivoEsperado: number;
+  efectivoContado: number;
+  diferencia: number;
+  observaciones: string;
+  estado: string;
+  activo: boolean;
+};
+
+export async function cerrarCaja(
+  datos: CreateCierreCajaRequest
+): Promise<CierreCajaGuardadoResponse> {
+  const respuesta = await fetch(`${API_URL}/v1/cierre-caja`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(datos),
+  });
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudo cerrar la caja"
+    );
+  }
+
+  return contenido;
+}
+export type ReporteVentaDiaApi = {
+  dia: string;
+  valor: number;
+};
+
+export type ReporteMetodoPagoApi = {
+  label: string;
+  pct: number;
+  monto: number;
+};
+
+export type ReporteProductoTopApi = {
+  pos: number;
+  nombre: string;
+  cant: number;
+  emoji: string;
+};
+
+export type ReporteMovimientoApi = {
+  fecha: string;
+  tipo: string;
+  cliente: string;
+  metodo: string;
+  total: number;
+  estado: string;
+};
+
+export type ReporteCanalApi = {
+  nombre: string;
+  total: number;
+  porcentaje: number;
+  transacciones: number;
+};
+
+export type ReporteGeneralResponse = {
+  ventasTotales: number;
+  pedidosEntregados: number;
+  ticketPromedio: number;
+  facturasEmitidas: number;
+  ventasPorDia: ReporteVentaDiaApi[];
+  metodosPago: ReporteMetodoPagoApi[];
+  productosTop: ReporteProductoTopApi[];
+  ultimosMovimientos: ReporteMovimientoApi[];
+  resumenCanal: ReporteCanalApi[];
+};
+
+export async function obtenerReportes(params?: {
+  desde?: string;
+  hasta?: string;
+  metodo?: string;
+  estado?: string;
+}): Promise<ReporteGeneralResponse> {
+  const query = new URLSearchParams();
+
+  if (params?.desde) query.set("desde", params.desde);
+  if (params?.hasta) query.set("hasta", params.hasta);
+  if (params?.metodo) query.set("metodo", params.metodo);
+  if (params?.estado) query.set("estado", params.estado);
+
+  const respuesta = await fetch(`${API_URL}/v1/reportes?${query.toString()}`);
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudo cargar el reporte"
+    );
+  }
+
+  return contenido;
+}
+
+export type ClienteApi = {
+  id: number;
+  nombre: string;
+  telefono: string;
+  direccion?: string;
+  activo: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CreateClienteRequest = {
+  nombre: string;
+  telefono: string;
+  direccion?: string;
+};
+
+export type UpdateClienteRequest = {
+  nombre?: string;
+  telefono?: string;
+  direccion?: string;
+  activo?: boolean;
+};
+
+export async function obtenerClientes(): Promise<ClienteApi[]> {
+  const respuesta = await fetch(`${API_URL}/v1/clientes`);
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudieron cargar los clientes"
+    );
+  }
+
+  return Array.isArray(contenido) ? contenido : [];
+}
+
+export async function crearCliente(
+  datos: CreateClienteRequest
+): Promise<ClienteApi> {
+  const respuesta = await fetch(`${API_URL}/v1/clientes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(datos),
+  });
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudo crear el cliente"
+    );
+  }
+
+  return contenido;
+}
+
+export async function actualizarCliente(
+  id: number,
+  datos: UpdateClienteRequest
+): Promise<ClienteApi> {
+  const respuesta = await fetch(`${API_URL}/v1/clientes/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(datos),
+  });
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudo actualizar el cliente"
+    );
+  }
+
+  return contenido;
+}
+
+export async function eliminarCliente(id: number) {
+  const respuesta = await fetch(`${API_URL}/v1/clientes/${id}`, {
+    method: "DELETE",
+  });
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudo eliminar el cliente"
+    );
+  }
+
+  return contenido;
+}
