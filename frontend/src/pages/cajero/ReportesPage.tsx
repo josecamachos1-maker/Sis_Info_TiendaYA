@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard, 
   ShoppingCart, 
@@ -37,7 +37,6 @@ type Props = {
  
 
  
-type MetodoPago = "Efectivo" | "QR" | "Mixto";
  
  
 function formatBs(v: number) {
@@ -202,21 +201,6 @@ function BarChart({
   );
 }
  
-const METODO_BADGE: Record<MetodoPago, ReactNode> = {
-  Efectivo: <span className="rp-badge efectivo">✓ Efectivo</span>,
-  QR:       <span className="rp-badge qr">⊞ QR</span>,
-  Mixto:    <span className="rp-badge mixto">▤ Mixto</span>,
-};
- 
-const ESTADO_BADGE: Record<string, ReactNode> = {
-  Completado: <span className="rp-estado completado">Completado</span>,
-  Entregado:  <span className="rp-estado entregado">Entregado</span>,
-};
- 
-const TIPO_BADGE: Record<string, ReactNode> = {
-  Venta:  <span className="rp-tipo venta">🛒 Venta</span>,
-  Pedido: <span className="rp-tipo pedido">📋 Pedido</span>,
-};
  
 // ── Componente principal ────────────────────────────────────
 export function ReportesPage({ usuario, onNavigate, onLogout }: Props) {

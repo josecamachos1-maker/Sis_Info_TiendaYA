@@ -1,30 +1,37 @@
 import { useState } from "react";
+
 import "./styles/global.css";
 import "./styles/role-selection.css";
 import "./styles/login.css";
 import "./styles/dashboard-cajero.css";
 import "./styles/buscar-producto.css";
-
-////////////////////////////////
+import "./styles/nueva-venta.css";
+import "./styles/registrar-pedido.css";
+import "./styles/pedidos-pendientes.css";
 import "./styles/clientes.css";
 import "./styles/cierre-de-caja.css";
 import "./styles/reportes.css";
-///////////////////////////////
 
-import { NuevaVentaPage } from "./pages/cajero/NuevaVentaPage";
+import { DashboardRepartidorPage } from "./pages/repartidor/DashboardRepartidorPage";
+import { PedidosRepartidorPage } from "./pages/repartidor/PedidosRepartidorPage";
+import { HistorialRepartidorPage } from "./pages/repartidor/HistorialRepartidorPage";
+import "./styles/dashboard-repartidor.css";
+import "./styles/estilos_repartidor/pedidos.css";
+import "./styles/estilos_repartidor/historial.css";
+
 import { RoleSelectionPage } from "./pages/RoleSelectionPage";
 import { LoginPage } from "./pages/LoginPage";
-import { DashboardCajeroPage } from "./pages/cajero/DashboardCajeroPage";
-import { BuscarProductoPage } from "./pages/cajero/BuscarProductoPage";
-import { RegistrarPedidoPage } from "./pages/cajero/RegistrarPedidoPage";
-import type { VistaCajero } from "./types/navigation";
-import { PedidosPendientesPage } from "./pages/cajero/PedidosPendientesPage";
 
-////////////////////////
+import { DashboardCajeroPage } from "./pages/cajero/DashboardCajeroPage";
+import { NuevaVentaPage } from "./pages/cajero/NuevaVentaPage";
+import { RegistrarPedidoPage } from "./pages/cajero/RegistrarPedidoPage";
+import { BuscarProductoPage } from "./pages/cajero/BuscarProductoPage";
+import { PedidosPendientesPage } from "./pages/cajero/PedidosPendientesPage";
 import { ClientesPage } from "./pages/cajero/ClientesPage";
 import { CierreDeCajaPage } from "./pages/cajero/CierreDeCajaPage";
 import { ReportesPage } from "./pages/cajero/ReportesPage";
-///////////////////////
+
+import type { VistaCajero } from "./types/navigation";
 
 export type RolUsuario = "CLIENTE" | "CAJERO" | "REPARTIDOR" | "ADMINISTRADOR";
 
@@ -35,97 +42,137 @@ export type UsuarioLogueado = {
   rol: string;
 };
 
+type VistaRepartidor = "dashboard" | "pedidos" | "historial";
+
 function App() {
   const [rolSeleccionado, setRolSeleccionado] = useState<RolUsuario | null>(null);
   const [usuarioLogueado, setUsuarioLogueado] = useState<UsuarioLogueado | null>(null);
   const [vistaCajero, setVistaCajero] = useState<VistaCajero>("dashboard");
+  const [vistaRepartidor, setVistaRepartidor] = useState<VistaRepartidor>("dashboard");
+
+  function cambiarVistaRepartidor(vista: string) {
+  if (vista === "dashboard" || vista === "pedidos" || vista === "historial") {
+    setVistaRepartidor(vista);
+  }
+}
 
   function cerrarSesion() {
-  setUsuarioLogueado(null);
-  setRolSeleccionado(null);
-  setVistaCajero("dashboard");
-}
+    setUsuarioLogueado(null);
+    setRolSeleccionado(null);
+    setVistaCajero("dashboard");
+    setVistaRepartidor("dashboard");
+  }
 
-  if (usuarioLogueado?.rol === "CAJERO") {
-    if (vistaCajero === "nueva-venta") {
-  return (
-    <NuevaVentaPage
-  usuario={usuarioLogueado}
-  onNavigate={setVistaCajero}
-  onLogout={cerrarSesion}
-/>
-  );
-}
-if (vistaCajero === "registrar-pedido") {
-  return (
-    <RegistrarPedidoPage
-  usuario={usuarioLogueado}
-  onNavigate={setVistaCajero}
-  onLogout={cerrarSesion}
-/>
-  );
-}
-
-if (vistaCajero === "pedidos-pendientes") {
-  return (
-    <PedidosPendientesPage
-  usuario={usuarioLogueado}
-  onNavigate={setVistaCajero}
-  onLogout={cerrarSesion}
-/>
-  );
-}
-
-    if (vistaCajero === "buscar-producto") {
+  if (usuarioLogueado?.rol === "REPARTIDOR") {
+    if (vistaRepartidor === "pedidos") {
       return (
-        <BuscarProductoPage
+        <PedidosRepartidorPage
   usuario={usuarioLogueado}
-  onNavigate={setVistaCajero}
+  cambiarVista={cambiarVistaRepartidor}
   onLogout={cerrarSesion}
 />
       );
     }
 
-    //////////////////
+    if (vistaRepartidor === "historial") {
+      return (
+       <HistorialRepartidorPage
+  usuario={usuarioLogueado}
+  cambiarVista={cambiarVistaRepartidor}
+  onLogout={cerrarSesion}
+/>
+      );
+    }
+
+    return (
+      <DashboardRepartidorPage
+  usuario={usuarioLogueado}
+  cambiarVista={cambiarVistaRepartidor}
+  onLogout={cerrarSesion}
+/>
+    );
+  }
+
+
+  
+
+  if (usuarioLogueado?.rol === "CAJERO") {
+    if (vistaCajero === "nueva-venta") {
+      return (
+        <NuevaVentaPage
+          usuario={usuarioLogueado}
+          onNavigate={setVistaCajero}
+          onLogout={cerrarSesion}
+        />
+      );
+    }
+
+    if (vistaCajero === "registrar-pedido") {
+      return (
+        <RegistrarPedidoPage
+          usuario={usuarioLogueado}
+          onNavigate={setVistaCajero}
+          onLogout={cerrarSesion}
+        />
+      );
+    }
+
+    if (vistaCajero === "pedidos-pendientes") {
+      return (
+        <PedidosPendientesPage
+          usuario={usuarioLogueado}
+          onNavigate={setVistaCajero}
+          onLogout={cerrarSesion}
+        />
+      );
+    }
+
+    if (vistaCajero === "buscar-producto") {
+      return (
+        <BuscarProductoPage
+          usuario={usuarioLogueado}
+          onNavigate={setVistaCajero}
+          onLogout={cerrarSesion}
+        />
+      );
+    }
+
     if (vistaCajero === "clientes") {
-     return (
-      <ClientesPage 
-  usuario={usuarioLogueado} 
-  onNavigate={setVistaCajero}
-  onLogout={cerrarSesion}
-/>
-     );
-   }
+      return (
+        <ClientesPage
+          usuario={usuarioLogueado}
+          onNavigate={setVistaCajero}
+          onLogout={cerrarSesion}
+        />
+      );
+    }
 
-   if (vistaCajero === "cierre-caja") {
-    return (
-      <CierreDeCajaPage 
-  usuario={usuarioLogueado} 
-  onNavigate={setVistaCajero}
-  onLogout={cerrarSesion}
-/>
-    );
-   }
+    if (vistaCajero === "cierre-caja") {
+      return (
+        <CierreDeCajaPage
+          usuario={usuarioLogueado}
+          onNavigate={setVistaCajero}
+          onLogout={cerrarSesion}
+        />
+      );
+    }
 
-   if (vistaCajero === "reportes") {
-    return (
-    <ReportesPage 
-  usuario={usuarioLogueado} 
-  onNavigate={setVistaCajero}
-  onLogout={cerrarSesion}
-/>
-    );
-   }
-
-   
-   /////////////////
+    if (vistaCajero === "reportes") {
+      return (
+        <ReportesPage
+          usuario={usuarioLogueado}
+          onNavigate={setVistaCajero}
+          onLogout={cerrarSesion}
+        />
+      );
+    }
 
     return (
       <DashboardCajeroPage
-  usuario={usuarioLogueado}
-  onNavigate={setVistaCajero}
-  onLogout={cerrarSesion}
-/>
+        usuario={usuarioLogueado}
+        onNavigate={setVistaCajero}
+        onLogout={cerrarSesion}
+      />
     );
   }
 
@@ -141,30 +188,4 @@ if (vistaCajero === "pedidos-pendientes") {
     />
   );
 }
-
 export default App;
-
-export async function cancelarPedido(id: number) {
-  const respuesta = await fetch(`http://localhost:3000/v1/pedidos/${id}`, {
-    method: "DELETE",
-  });
-
-  let resultado: any = null;
-
-  try {
-    resultado = await respuesta.json();
-  } catch {
-    resultado = null;
-  }
-
-  if (!respuesta.ok) {
-    throw new Error(
-      resultado?.mensaje ||
-        resultado?.message ||
-        resultado?.error ||
-        "No se pudo cancelar el pedido"
-    );
-  }
-
-  return resultado;
-}

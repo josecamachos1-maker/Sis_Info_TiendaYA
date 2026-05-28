@@ -241,7 +241,7 @@ export async function obtenerFacturaPorVenta(ventaId: number): Promise<FacturaRe
 
 export type CreatePedidoDto = {
   clienteId: number;
-  repartidorId?: number;
+  repartidorId?: number | null;
   direccionEntrega: string;
   productos: {
     productoId: number;
@@ -285,7 +285,7 @@ export type CreatePedidoRapidoDto = {
   referenciaEntrega?: string;
   zona?: string;
   observaciones?: string;
-  repartidorId?: number;
+ repartidorId?: number | null;
   costoEnvio?: number;
   productos: {
     productoId: number;
@@ -759,4 +759,146 @@ export async function eliminarCliente(id: number) {
   }
 
   return contenido;
+}
+
+export type PedidoAsignadoRepartidor = {
+  id: number;
+  clienteNombre: string;
+  repartidorId?: number;
+  repartidorNombre?: string;
+  direccionEntrega: string;
+  estado: string;
+  total: number;
+  detalles?: unknown[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+export async function obtenerPedidosAsignados(repartidorId: number): Promise<PedidoAsignadoRepartidor[]> {
+  const respuesta = await fetch(`${API_URL}/v1/repartidor/${repartidorId}/pedidos`);
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudieron cargar los pedidos del repartidor"
+    );
+  }
+
+  return Array.isArray(contenido) ? contenido : [];
+}
+
+export async function obtenerHistorialRepartidor(
+  repartidorId: number
+): Promise<PedidoAsignadoRepartidor[]> {
+  const respuesta = await fetch(`${API_URL}/v1/repartidor/${repartidorId}/historial`);
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudo cargar el historial del repartidor"
+    );
+  }
+
+  return Array.isArray(contenido) ? contenido : [];
+}
+
+export async function actualizarEstadoPedido(
+  pedidoId: number,
+  estado:
+    | "PENDIENTE"
+    | "EN_PREPARACION"
+    | "LISTO_PARA_ENTREGAR"
+    | "EN_CAMINO"
+    | "ENTREGADO"
+    | "CANCELADO"
+    | "ENTREGA_FALLIDA",
+  repartidorId?: number
+) {
+  const body: {
+    estado: string;
+    repartidorId?: number;
+  } = {
+    estado,
+  };
+
+  if (repartidorId !== undefined) {
+    body.repartidorId = repartidorId;
+  }
+
+  const respuesta = await fetch(`${API_URL}/v1/pedidos/${pedidoId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudo actualizar el estado del pedido"
+    );
+  }
+
+  return contenido;
+}
+
+export type RepartidorApi = {
+  id: number;
+  nombre: string;
+  telefono?: string;
+  estadoDisponible?: boolean;
+  activo?: boolean;
+};
+
+export async function obtenerRepartidoresDisponibles(): Promise<RepartidorApi[]> {
+  const respuesta = await fetch(`${API_URL}/v1/repartidores/disponibles`);
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudieron cargar los repartidores disponibles"
+    );
+  }
+
+  return Array.isArray(contenido) ? contenido : [];
 }

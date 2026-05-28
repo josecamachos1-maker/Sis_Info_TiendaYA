@@ -37,10 +37,12 @@ import {
   crearVentaRapida,
   crearPedidoRapido,
   obtenerFacturaPorVenta,
+  obtenerRepartidoresDisponibles,
   type ProductoApi,
   type CreateVentaRapidaDto,
   type CreatePedidoRapidoDto,
   type FacturaResponse,
+  type RepartidorApi,
 } from "../../services/api";
 
 type Props = {
@@ -91,6 +93,7 @@ export function RegistrarPedidoPage({ usuario, onNavigate, onLogout }: Props) {
   const [referenciaEntrega, setReferenciaEntrega] = useState("");
   const [zona, setZona] = useState("");
   const [repartidor, setRepartidor] = useState("");
+  const [repartidores, setRepartidores] = useState<RepartidorApi[]>([]);
   const [observacionesPedido, setObservacionesPedido] = useState("");
 
   const [metodoPago, setMetodoPago] = useState<MetodoPagoVista>("EFECTIVO");
@@ -110,27 +113,29 @@ export function RegistrarPedidoPage({ usuario, onNavigate, onLogout }: Props) {
   const [mostrandoFactura, setMostrandoFactura] = useState(false);
 
   useEffect(() => {
-    async function cargarProductos() {
-      try {
-        setCargando(true);
-        setError("");
+  async function cargarDatosIniciales() {
+    try {
+      setCargando(true);
+      setError("");
 
-        const datos = await obtenerProductos();
-        setProductos(datos);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("Error inesperado al cargar productos");
-        }
-      } finally {
-        setCargando(false);
+      const productosData = await obtenerProductos();
+      setProductos(productosData);
+
+      const repartidoresData = await obtenerRepartidoresDisponibles();
+      setRepartidores(repartidoresData);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Error inesperado al cargar productos y repartidores");
       }
+    } finally {
+      setCargando(false);
     }
+  }
 
-    cargarProductos();
-  }, []);
-
+  cargarDatosIniciales();
+}, []);
   const categorias = useMemo(() => {
     const categoriasUnicas = Array.from(
       new Set(productos.map((producto) => producto.categoria).filter(Boolean))
@@ -376,6 +381,7 @@ export function RegistrarPedidoPage({ usuario, onNavigate, onLogout }: Props) {
       zona: zona || undefined,
       observaciones: observacionesPedido.trim() || undefined,
       costoEnvio: costoEnvio,
+      repartidorId: repartidor.trim() === "" ? null : Number(repartidor),
       productos: carrito.map((item) => ({
         productoId: item.producto.id,
         cantidad: item.cantidad,
@@ -613,12 +619,19 @@ export function RegistrarPedidoPage({ usuario, onNavigate, onLogout }: Props) {
                 <div className="pedido-doble-campo">
                   <div>
                     <label className="venta-label">Repartidor</label>
-                    <input
-                      className="pedido-input"
-                      value={repartidor}
-                      onChange={(evento) => setRepartidor(evento.target.value)}
-                      placeholder="Opcional"
-                    />
+<select
+  className="pedido-input"
+  value={repartidor}
+  onChange={(evento) => setRepartidor(evento.target.value)}
+>
+  <option value="">Sin repartidor asignado</option>
+
+  {repartidores.map((item) => (
+    <option key={item.id} value={item.id}>
+      {item.nombre}
+    </option>
+  ))}
+</select>
                   </div>
 
                   <div>
