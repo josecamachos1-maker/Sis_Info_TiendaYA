@@ -6,6 +6,7 @@ import { PaginaActualC } from "../../components/cliente/PaginaActualC";
 import { useState } from "react";
 
 import type { ItemCarrito } from "../../types/carrito";
+import type { UsuarioLogueado } from "../../App";
 
 import {
   crearPedidoRapido,
@@ -13,11 +14,12 @@ import {
 } from "../../services/api";
 
 type Props = {
+  usuario: UsuarioLogueado;
   onNavigate: (pagina: string) => void;
   carrito: ItemCarrito[];
 };
 
-export function CheckoutClientePage({onNavigate,carrito}: Props) {
+export function CheckoutClientePage({ usuario, onNavigate, carrito }: Props) {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [direccion, setDireccion] = useState("");
@@ -66,9 +68,39 @@ const [enviando, setEnviando] = useState(false);
   productos: productosPedido,
 };
 
-    await crearPedidoRapido(pedidoRapido);
+    const pedidoCreado = await crearPedidoRapido(pedidoRapido);
 
-    localStorage.setItem("clienteTelefonoPedido", telefono);
+   const limpiarTelefono = (valor: string) => valor.replace(/\D/g, "");
+
+const claveIds = `clientePedidosIds_${usuario.id}`;
+const claveTelefonos = `clienteTelefonosPedidos_${usuario.id}`;
+
+const pedidoIdCreado = Number((pedidoCreado as any)?.id);
+
+if (Number.isFinite(pedidoIdCreado)) {
+  const idsGuardados = JSON.parse(
+    localStorage.getItem(claveIds) || "[]"
+  ) as number[];
+
+  const nuevosIds = Array.from(
+    new Set([...idsGuardados, pedidoIdCreado])
+  );
+
+  localStorage.setItem(claveIds, JSON.stringify(nuevosIds));
+}
+
+const telefonoLimpio = limpiarTelefono(telefono);
+
+const telefonosGuardados = JSON.parse(
+  localStorage.getItem(claveTelefonos) || "[]"
+) as string[];
+
+const nuevosTelefonos = Array.from(
+  new Set([...telefonosGuardados, telefonoLimpio])
+);
+
+localStorage.setItem(claveTelefonos, JSON.stringify(nuevosTelefonos));
+localStorage.setItem("clienteTelefonoPedido", telefonoLimpio);
 
     setTipoMensaje("exito");
     setMensaje("Pedido realizado correctamente. Puedes revisar el estado en Mis pedidos.");

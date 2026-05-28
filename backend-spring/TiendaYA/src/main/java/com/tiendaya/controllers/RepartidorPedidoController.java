@@ -49,6 +49,7 @@ public class RepartidorPedidoController {
                 pedido.getId(),
                 pedido.getCliente().getId(),
                 pedido.getCliente().getNombre(),
+                pedido.getCliente().getTelefono(),
                 pedido.getRepartidor() != null ? pedido.getRepartidor().getId() : null,
                 pedido.getRepartidor() != null ? pedido.getRepartidor().getNombre() : null,
                 pedido.getFechaHora(),

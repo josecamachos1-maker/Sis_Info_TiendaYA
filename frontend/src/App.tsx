@@ -158,13 +158,14 @@ if (usuarioLogueado?.rol === "CLIENTE") {
   }
 
   if (vistaCliente === "checkout") {
-    return (
-      <CheckoutClientePage
-        onNavigate={navegarCliente}
-        carrito={carritoCliente}
-      />
-    );
-  }
+  return (
+    <CheckoutClientePage
+      usuario={usuarioLogueado}
+      onNavigate={navegarCliente}
+      carrito={carritoCliente}
+    />
+  );
+}
 
   if (vistaCliente === "pedidos") {
   return (
