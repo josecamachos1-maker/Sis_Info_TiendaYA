@@ -103,6 +103,8 @@ export type ProductoApi = {
   fechaActualizacion: string;
   activo: boolean;
   imageUrl: string;
+    createdAt?: string;
+  updatedAt?: string;
 };
 
 type ProductoBackend = {
@@ -133,24 +135,26 @@ function normalizarProducto(producto: ProductoBackend): ProductoApi {
     "";
 
   return {
-    id: producto.id,
-    nombre: producto.nombre || "Producto sin nombre",
-    categoria: producto.categoria || "Sin categoría",
-    precio: Number(
-      producto.precio ??
+  id: producto.id,
+  nombre: producto.nombre || "Producto sin nombre",
+  categoria: producto.categoria || "Sin categoría",
+  precio: Number(
+    producto.precio ??
       producto.precioVenta ??
       producto.precioUnitario ??
       0
-    ),
-    stock: Number(producto.stock ?? 0),
-    unidad: producto.unidad || "Unidad",
-    proveedor: producto.proveedor || "No registrado",
-    fechaActualizacion: fecha
-      ? new Date(fecha).toLocaleDateString("es-BO")
-      : "-",
-    activo: producto.activo !== false,
-    imageUrl: producto.imageUrl || producto.image_url || "",
-  };
+  ),
+  stock: Number(producto.stock ?? 0),
+  unidad: producto.unidad || "Unidad",
+  proveedor: producto.proveedor || "No registrado",
+  fechaActualizacion: fecha
+    ? new Date(fecha).toLocaleDateString("es-BO")
+    : "-",
+  activo: producto.activo !== false,
+  imageUrl: producto.imageUrl || producto.image_url || "",
+  createdAt: producto.createdAt,
+  updatedAt: producto.updatedAt || producto.fechaActualizacion || producto.createdAt,
+};
 }
 
 export async function obtenerProductos(): Promise<ProductoApi[]> {
@@ -901,4 +905,176 @@ export async function obtenerRepartidoresDisponibles(): Promise<RepartidorApi[]>
   }
 
   return Array.isArray(contenido) ? contenido : [];
+}
+
+export type ProductoResponseDto = ProductoApi;
+
+export type PedidoAdminDto = {
+  id: number;
+  clienteId?: number;
+  clienteNombre: string;
+  clienteTelefono?: string;
+  repartidorId?: number | null;
+  repartidorNombre?: string | null;
+  fechaHora: string;
+  direccionEntrega: string;
+  estado:
+    | "PENDIENTE"
+    | "EN_PREPARACION"
+    | "LISTO_PARA_ENTREGAR"
+    | "EN_CAMINO"
+    | "ENTREGADO"
+    | "CANCELADO"
+    | "ENTREGA_FALLIDA";
+  total: number;
+  detalles?: PedidoDetalleApi[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type VentaResponseDto = {
+  id: number;
+  clienteNombre?: string;
+  fechaVenta: string;
+  montoTotal: number;
+  estadoVenta: "PENDIENTE" | "COMPLETADA" | "CANCELADA";
+  metodoPago?: string;
+};
+
+export async function obtenerTodosLosProductos(): Promise<ProductoResponseDto[]> {
+  return obtenerProductos();
+}
+
+export async function obtenerPedidosAdmin(): Promise<PedidoAdminDto[]> {
+  const pedidos = await obtenerPedidos();
+
+  return pedidos.map((pedido: any) => ({
+    id: Number(pedido.id),
+    clienteId: pedido.clienteId,
+    clienteNombre: pedido.clienteNombre || "Cliente sin nombre",
+    clienteTelefono: pedido.clienteTelefono,
+    repartidorId: pedido.repartidorId ?? null,
+    repartidorNombre: pedido.repartidorNombre ?? null,
+    fechaHora:
+      pedido.fechaHora ||
+      pedido.fechaPedido ||
+      pedido.createdAt ||
+      pedido.updatedAt ||
+      new Date().toISOString(),
+    direccionEntrega: pedido.direccionEntrega || "Sin dirección",
+    estado: pedido.estado || "PENDIENTE",
+    total: Number(pedido.total || 0),
+    detalles: pedido.detalles || [],
+    createdAt: pedido.createdAt,
+    updatedAt: pedido.updatedAt,
+  }));
+}
+
+export async function obtenerVentas(): Promise<VentaResponseDto[]> {
+  const respuesta = await fetch(`${API_URL}/v1/ventas`);
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudieron cargar las ventas"
+    );
+  }
+
+  const lista = Array.isArray(contenido) ? contenido : [];
+
+  return lista.map((venta: any) => ({
+    id: Number(venta.id),
+    clienteNombre: venta.clienteNombre || venta.cliente?.nombre || "Cliente sin nombre",
+    fechaVenta:
+      venta.fechaVenta ||
+      venta.fechaHora ||
+      venta.createdAt ||
+      venta.updatedAt ||
+      new Date().toISOString(),
+    montoTotal: Number(venta.montoTotal || venta.total || 0),
+    estadoVenta: venta.estadoVenta || venta.estado || "COMPLETADA",
+    metodoPago: venta.metodoPago,
+  }));
+}
+
+export type CrearProductoAdminDto = {
+  nombre: string;
+  categoria: string;
+  precio: number;
+  stock: number;
+  imageUrl?: string;
+};
+
+export async function crearProducto(data: CrearProductoAdminDto): Promise<ProductoResponseDto> {
+  const respuesta = await fetch(`${API_URL}/v1/productos`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const contenido = await respuesta.json();
+
+  if (!respuesta.ok) {
+    throw new Error(contenido?.mensaje || "No se pudo crear el producto");
+  }
+
+  return normalizarProducto(contenido);
+}
+
+export async function actualizarProducto(
+  id: number,
+  data: Partial<CrearProductoAdminDto>
+): Promise<ProductoResponseDto> {
+  const respuesta = await fetch(`${API_URL}/v1/productos/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const contenido = await respuesta.json();
+
+  if (!respuesta.ok) {
+    throw new Error(contenido?.mensaje || "No se pudo actualizar el producto");
+  }
+
+  return normalizarProducto(contenido);
+}
+
+export async function eliminarProducto(id: number) {
+  const respuesta = await fetch(`${API_URL}/v1/productos/${id}`, {
+    method: "DELETE",
+  });
+
+  let contenido: any = null;
+
+  try {
+    contenido = await respuesta.json();
+  } catch {
+    contenido = null;
+  }
+
+  if (!respuesta.ok) {
+    throw new Error(
+      contenido?.mensaje ||
+        contenido?.message ||
+        contenido?.error ||
+        "No se pudo eliminar el producto"
+    );
+  }
+
+  return contenido;
 }

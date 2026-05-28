@@ -13,6 +13,7 @@ import "./styles/cierre-de-caja.css";
 import "./styles/reportes.css";
 import type { ItemCarrito } from "./types/carrito";
 
+import { Dashboard_de_admin } from "./pages/admin/Dashboard_de_admin";
 import { HomeClientePage } from "./pages/cliente/HomeClientePage";
 import { ProductosClientePage } from "./pages/cliente/ProductosClientePage";
 import { CarritoClientePage } from "./pages/cliente/CarritoClientePage";
@@ -216,6 +217,18 @@ if (usuarioLogueado?.rol === "CLIENTE") {
 />
     );
   }
+  
+  if (
+  usuarioLogueado?.rol === "ADMINISTRADOR" ||
+  usuarioLogueado?.rol === "DUENO"
+) {
+  return (
+    <Dashboard_de_admin
+      usuario={usuarioLogueado}
+      setUsuarioLogueado={() => cerrarSesion()}
+    />
+  );
+}
 
 
   
