@@ -11,6 +11,27 @@ import "./styles/pedidos-pendientes.css";
 import "./styles/clientes.css";
 import "./styles/cierre-de-caja.css";
 import "./styles/reportes.css";
+import type { ItemCarrito } from "./types/carrito";
+
+import { HomeClientePage } from "./pages/cliente/HomeClientePage";
+import { ProductosClientePage } from "./pages/cliente/ProductosClientePage";
+import { CarritoClientePage } from "./pages/cliente/CarritoClientePage";
+import { CheckoutClientePage } from "./pages/cliente/CheckoutClientePage";
+import { PedidosClientePage } from "./pages/cliente/PedidosClientePage";
+import { PerfilClientePage } from "./pages/cliente/PerfilClientePage";
+
+import "./styles/cliente/home-cliente.css";
+import "./styles/cliente/ProductosClientePage.css";
+import "./styles/cliente/carrito-cliente.css";
+import "./styles/cliente/checkout-cliente.css";
+import "./styles/cliente/pedidos-cliente.css";
+import "./styles/cliente/perfil-cliente.css";
+import "./styles/cliente/navbar-cliente.css";
+import "./styles/cliente/producto-card.css";
+import "./styles/cliente/carrito-item.css";
+import "./styles/cliente/categoria.css";
+import "./styles/cliente/searchbar.css";
+import "./styles/cliente/pagina-actual.css";
 
 import { DashboardRepartidorPage } from "./pages/repartidor/DashboardRepartidorPage";
 import { PedidosRepartidorPage } from "./pages/repartidor/PedidosRepartidorPage";
@@ -43,12 +64,15 @@ export type UsuarioLogueado = {
 };
 
 type VistaRepartidor = "dashboard" | "pedidos" | "historial";
-
+type VistaCliente = "home" | "productos" | "carrito" | "checkout" | "pedidos" | "perfil";
 function App() {
   const [rolSeleccionado, setRolSeleccionado] = useState<RolUsuario | null>(null);
   const [usuarioLogueado, setUsuarioLogueado] = useState<UsuarioLogueado | null>(null);
   const [vistaCajero, setVistaCajero] = useState<VistaCajero>("dashboard");
   const [vistaRepartidor, setVistaRepartidor] = useState<VistaRepartidor>("dashboard");
+
+  const [vistaCliente, setVistaCliente] = useState<VistaCliente>("home");
+  const [carritoCliente, setCarritoCliente] = useState<ItemCarrito[]>([]);
 
   function cambiarVistaRepartidor(vista: string) {
   if (vista === "dashboard" || vista === "pedidos" || vista === "historial") {
@@ -57,12 +81,111 @@ function App() {
 }
 
   function cerrarSesion() {
-    setUsuarioLogueado(null);
-    setRolSeleccionado(null);
-    setVistaCajero("dashboard");
-    setVistaRepartidor("dashboard");
+  setUsuarioLogueado(null);
+  setRolSeleccionado(null);
+  setVistaCajero("dashboard");
+  setVistaRepartidor("dashboard");
+  setVistaCliente("home");
+}
+
+function navegarCliente(pagina: string) {
+  if (
+    pagina === "home" ||
+    pagina === "productos" ||
+    pagina === "carrito" ||
+    pagina === "checkout" ||
+    pagina === "pedidos" ||
+    pagina === "perfil"
+  ) {
+    setVistaCliente(pagina);
+  }
+}
+
+function actualizarCantidadCliente(producto: ItemCarrito, cambio: number) {
+  setCarritoCliente((actual) => {
+    const existe = actual.find((item) => item.id === producto.id);
+
+    if (!existe && cambio > 0) {
+      return [...actual, { ...producto, cantidad: 1 }];
+    }
+
+    return actual
+      .map((item) =>
+        item.id === producto.id
+          ? { ...item, cantidad: Math.max(0, item.cantidad + cambio) }
+          : item
+      )
+      .filter((item) => item.cantidad > 0);
+  });
+}
+
+function actualizarCantidadCarrito(id: number, cambio: number) {
+  setCarritoCliente((actual) =>
+    actual
+      .map((item) =>
+        item.id === id
+          ? { ...item, cantidad: Math.max(0, item.cantidad + cambio) }
+          : item
+      )
+      .filter((item) => item.cantidad > 0)
+  );
+}
+
+function eliminarProductoCarrito(id: number) {
+  setCarritoCliente((actual) => actual.filter((item) => item.id !== id));
+}
+
+if (usuarioLogueado?.rol === "CLIENTE") {
+  if (vistaCliente === "productos") {
+    return (
+      <ProductosClientePage
+        onNavigate={navegarCliente}
+        carrito={carritoCliente}
+        onActualizarCantidad={actualizarCantidadCliente}
+      />
+    );
   }
 
+  if (vistaCliente === "carrito") {
+    return (
+      <CarritoClientePage
+        onNavigate={navegarCliente}
+        carrito={carritoCliente}
+        onActualizarCantidad={actualizarCantidadCarrito}
+        onEliminarProducto={eliminarProductoCarrito}
+      />
+    );
+  }
+
+  if (vistaCliente === "checkout") {
+    return (
+      <CheckoutClientePage
+        onNavigate={navegarCliente}
+        carrito={carritoCliente}
+      />
+    );
+  }
+
+  if (vistaCliente === "pedidos") {
+  return (
+    <PedidosClientePage
+      usuario={usuarioLogueado}
+      onNavigate={navegarCliente}
+    />
+  );
+}
+  if (vistaCliente === "perfil") {
+    return <PerfilClientePage onNavigate={navegarCliente} />;
+  }
+
+  return (
+    <HomeClientePage
+      onNavigate={navegarCliente}
+      carrito={carritoCliente}
+      onActualizarCantidad={actualizarCantidadCliente}
+    />
+  );
+}
   if (usuarioLogueado?.rol === "REPARTIDOR") {
     if (vistaRepartidor === "pedidos") {
       return (

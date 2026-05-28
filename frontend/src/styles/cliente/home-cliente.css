@@ -1,0 +1,139 @@
+/* ==========================================
+   ESTILOS GENERALES Y CONTENEDOR PRINCIPAL
+   ========================================== */
+.home-cliente {
+  background-color: #f8fafc; /* Fondo gris claro ultra limpio estilo Figma */
+  min-height: 100vh;
+  padding-bottom: 90px; /* Espacio para que el navbar flotante no tape contenido */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.cliente-header {
+  background-color: #ffffff;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* ==========================================
+   SECCIÓN BANNER DE NOVEDADES (CARRUSEL)
+   ========================================== */
+.banner-novedades {
+  margin: 20px 16px;
+  background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%); /* Degradado naranja pastel del Figma */
+  border-radius: 24px; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(254, 215, 170, 0.3); /* Sombra con tono naranja */
+  overflow: hidden;
+  height: 160px; /* Altura ideal fija para que se vea estilizado */
+}
+
+/* Botones de flechas (Izquierda y Derecha) estilizados transparentes */
+.banner-arrow {
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  color: #ea580c; /* Naranja oscuro */
+  font-size: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.banner-arrow:hover {
+  background: rgba(255, 255, 255, 0.7);
+  transform: scale(1.1);
+}
+
+/* Contenido de texto dentro del banner */
+.banner-contenido {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 12px;
+  z-index: 2;
+}
+
+.banner-contenido h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1e293b; /* Texto oscuro moderno */
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+}
+
+/* Botón "Ver" dentro del banner */
+.btn-banner-ver {
+  background-color: #ffffff;
+  color: #ff7a00; /* Tu naranja corporativo */
+  border: none;
+  padding: 8px 24px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-banner-ver:hover {
+  background-color: #fff7ed;
+  transform: translateY(-1px);
+}
+
+/* Contenedor e Imagen del Banner */
+.banner-imagen-wrapper {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.banner-img {
+  max-width: 110%;
+  max-height: 110%;
+  object-fit: contain;
+  transform: scale(1.05); /* Hace que sobresalga un poquito de forma estética */
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12)); /* Sombra a los productos del banner */
+}
+
+/* ==========================================
+   GRID DE PRODUCTOS
+   ========================================== */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas para celular y 6 laptop */
+  gap: 16px;
+  padding: 0 16px 20px 16px;
+}
+
+.cargando-texto {
+  grid-column: span 2;
+  text-align: center;
+  color: #8b8364;
+  font-size: 14px;
+  padding: 20px;
+}
+
+/* ==========================================
+   DETALLES ESTÉTICOS COMPLEMENTARIOS
+   ========================================== */
+/* Asegura que los textos auxiliares y espaciados tengan armonía visual */
+h1, h2, p, span {
+  margin: 0;
+}
