@@ -3,10 +3,11 @@
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  gap: 0; /* Quitamos espacios innecesarios */
+  gap: 0; 
+  height: 40px;
 }
 
-/* El contenedor del input se expande de forma elegante */
+/* El contenedor del input se expande */
 .search-input {
   flex: 1;
   position: relative;
@@ -14,8 +15,7 @@
   align-items: center;
 }
 
-/* 🕶️ TRUCO DE MAGIA: Ponemos un icono de lupa falso usando CSS antes del input 
-   para no tener que modificar tu código TSX */
+/* lupa falso usando*/
 .search-input::before {
   content: "🔍"; 
   position: absolute;
@@ -32,7 +32,7 @@
   padding: 12px 16px 12px 42px; /* 42px a la izquierda para dejarle espacio a la lupa */
   font-size: 14px;
   color: #554b33;
-  background-color: #f1f5f9; /* Fondo gris  */
+  background-color: #f1f3f9; /* Fondo gris  */
   border: 1px solid transparent; /* Sin bordes negros toscos */
   border-radius: 30px; /* Bordes ultra redondeados de píldora */
   outline: none;

@@ -1,6 +1,4 @@
-/* =======================================================
-   CONTENEDOR PRINCIPAL ESTILO CELULAR (FIGMA)
-   ======================================================= */
+/*   CONTENEDOR PRINCIPAL ESTILO CELULAR */
 .carrito-cliente-page {
   width: 100%;
   max-width: 480px;
@@ -14,9 +12,7 @@
   flex-direction: column;
 }
 
-/* =======================================================
-   SECCIÓN SUGERENCIAS: CAJA DEGRADADA DE FONDO
-   ======================================================= */
+/*   SECCIÓN SUGERENCIAS: */
 .sugerencias-carrito {
   background: linear-gradient(180deg, #fffbeb 0%, #ffedd5 100%);
   border-radius: 24px;
@@ -27,7 +23,7 @@
   width: 100%;
   overflow: hidden; 
 }
-
+/*titulo tambien podria gustarte*/
 .sugerencias-carrito h3 {
   font-size: 13px;
   font-weight: 700;
@@ -42,23 +38,21 @@
   overflow-x: auto;
   padding-bottom: 8px;
   width: 100%;
-  scrollbar-width: none; /* Oculta en Firefox */
-  -webkit-overflow-scrolling: touch; /* Scroll fluido en iOS */
+  scrollbar-width: none; 
+  -webkit-overflow-scrolling: touch; /* Scroll*/
 }
 
 .sugerencias-scroll::-webkit-scrollbar {
-  display: none; /* Oculta en Chrome/Safari */
+  display: none; /* Oculta la barra de scroll en WebKit */
 }
 
-/* =======================================================
-   RESETEO ENÉRGICO DEL CONTENEDOR DE LA TARJETA SUGERIDA
-   ======================================================= */
+/*tamanio de cada carta */
 .producto-sugerido {
   flex: 0 0 150px; /* Ancho horizontal compacto de prod */
   box-sizing: border-box;
 }
 
-/* Forzado directo sobre la caja del componente (mantiene la horizontalidad) */
+/* cuerpo de la targeta para que tenga una conf horizontal en el carrusel*/
 .producto-sugerido > div,
 .producto-sugerido > article {
   background-color: #ffffff !important;
@@ -83,7 +77,7 @@
   gap: 10px !important;
 }
 
-/* Ajuste de la imagen para que no se deforme al colapsar la caja */
+/* arreglar la imagen para que no se deforme al colapsar la caja */
 .producto-sugerido img {
   width: 45px !important;
   height: 45px !important;
@@ -103,7 +97,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
+/* modificar el precio para que se vea mas compacto y con el color naranja de tu paleta */
 .producto-sugerido p,
 .producto-sugerido [class*="precio"] {
   font-size: 11px !important;
@@ -112,7 +106,7 @@
   margin: 2px 0 0 0 !important;
 }
 
-/* Estilización final limpia del botón "Añadir" */
+/*  botón "Añadir" */
 .producto-sugerido button,
 .producto-sugerido [class*="btn"],
 .producto-sugerido [class*="add"] {
@@ -125,8 +119,8 @@
   width: auto !important;
   height: auto !important;
   min-height: initial !important;
-  margin: 0 0 0 auto !important; /* Lo empuja elegantemente hacia la derecha */
-  background: #ff7a00 !important; /* Naranja exacto de tu paleta */
+  margin: 0 0 0 auto !important; /* Lo empuja a la derecha */
+  background: #ff7a00 !important;
   color: #ffffff !important;
   border: none !important;
   cursor: pointer !important;
@@ -145,16 +139,15 @@
   display: none !important;
 }
 
-/* =======================================================
-   SECCIÓN "TU CARRITO" (CÁPSULAS CON BORDES DE COLORES)
-   ======================================================= */
+/*    SECCIÓN "TU CARRITO" */
+/* Título "Tu Carrito" */
 .carrito-cliente-page > strong {
   display: block;
   font-size: 16px;
   color: #1e293b;
   margin: 24px 0 8px 4px;
 }
-
+/*productos de forma verfical*/
 .productos-carrito {
   display: flex;
   flex-direction: column;
@@ -171,15 +164,14 @@
   width: 100% !important;
 }
 
-/* --- ASIGNACIÓN DINÁMICA DE COLORES DE BORDE AL LISTADO INFERIOR --- */
+/* COLORES DE BORDE de los prod de carrito*/
 .productos-carrito > div:nth-child(4n+1) article { border: 1.5px solid #3b82f6; } /* Azul */
 .productos-carrito > div:nth-child(4n+2) article { border: 1.5px solid #22c55e; } /* Verde */
 .productos-carrito > div:nth-child(4n+3) article { border: 1.5px solid #f97316; } /* Naranja */
 .productos-carrito > div:nth-child(4n+4) article { border: 1.5px solid #a855f7; } /* Morado */
 
-/* =======================================================
-   BLOC DE TOTALES
-   ======================================================= */
+/*    BLOC DE TOTALES */
+/*etiqueta flotante*/
 .carrito-cliente-page strong[style*="display: block"] {
   display: flex !important;
   justify-content: flex-end;
@@ -202,23 +194,21 @@
   margin-top: 4px;
 }
 
-/* =======================================================
-   METODOS DE PAGO: INTERFAZ DE BOTONES VERTICALES
-   ======================================================= */
+/* METODOS DE PAGO:  BOTONES VERTICALES*/
 .carrito-cliente-page > p {
   font-size: 14px;
   color: #475569;
   font-weight: 500;
   margin: 16px 0 10px 4px;
 }
-
+/*Los alinear uno abajo del otro */
 .metodos-pago {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 28px;
 }
-
+/* Crea un botón blanco. */
 .metodo-item {
   display: flex;
   align-items: center;
@@ -230,11 +220,11 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
   transition: background-color 0.2s ease;
 }
-
+/*cambiar el fronde del boton al toca*/
 .metodo-item:hover {
   background-color: #f8fafc;
 }
-
+/*redicenar los borones redondo */
 .metodo-item input[type="radio"] {
   appearance: none;
   width: 20px;
@@ -266,9 +256,7 @@
   color: #334155;
 }
 
-/* =======================================================
-   BOTÓN CHECKOUT
-   ======================================================= */
+/*    BOTÓN CHECKOUT */
 .checkout {
   width: 100%;
 }
@@ -291,7 +279,7 @@
   background: #5c1902;
   transform: translateY(-1px);
 }
-
+/*volver gris el boton deshabilitado*/
 .btn-checkout:disabled {
   background-color: #cbd5e1;
   color: #94a3b8;

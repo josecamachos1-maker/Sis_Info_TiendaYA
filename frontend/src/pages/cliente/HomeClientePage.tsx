@@ -91,9 +91,17 @@ function anteriorBanner() {
   );
 
   const carritoSeguro = carrito || [];
-
+  const [modoNoche, setModoNoche] = useState(false); 
   return (
-    <main className="home-cliente">
+    <main className={`home-cliente ${modoNoche ? "dark" : ""}`}>
+      
+      <button 
+        type="button"
+        onClick={() => setModoNoche(!modoNoche)} 
+      >
+        {modoNoche ? "Modo Día " : "Modo Noche "}
+      </button>
+
       <header className="cliente-header">
         <Logo width="260px" />
       </header>
