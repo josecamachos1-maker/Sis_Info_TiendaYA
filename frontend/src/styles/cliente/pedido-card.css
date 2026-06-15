@@ -77,47 +77,47 @@
   background-color: #fee2e2;
   color: #b91c1c;
 }
-.pedido-detalle {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px dashed #cbd5e1; /* Línea divisoria punteada estética */
-}
-
-.pedido-tipo {
-  font-size: 14px;
-  font-weight: 600;
-  color: #475569;
-  margin: 0 0 12px 0;
-}
-
+/* Contenedor general de la lista de productos */
 .pedido-productos {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin: 12px 0;
 }
 
+/* La fila del producto se convierte en una grilla de 3 columnas independientes */
 .producto-mini {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 35px 1fr auto; 
   align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Columna 1: Cantidad fija a la izquierda */
+.producto-cantidad {
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 500;
+}
+
+/* Columna 2: Nombre del producto que toma todo el espacio central libre */
+.producto-nombre {
   font-size: 14px;
   color: #334155;
+  text-align: left;
+  white-space: nowrap;      /* Evita que se rompa en dos líneas */
+  overflow: hidden;         /* Recorta el texto si es anormalmente largo */
+  text-overflow: ellipsis;  /* Agrega tres puntitos (...) si no llega a entrar */
 }
 
-.producto-mini strong {
-  color: #0f172a;
-}
-
-.pedido-total {
+/* Columna 3: Precio subtotal empujado e igualado perfectamente a la derecha */
+.producto-subtotal {
+  font-size: 14px;
+  font-weight: 700;
   text-align: right;
-  font-size: 16px;
   color: #0f172a;
-  padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
-  margin-bottom: 16px;
 }
-
 /* ==========================================
    EL STEPPER HORIZONTAL (IGUAL AL FIGMA)
    ========================================== */
@@ -185,7 +185,7 @@
   font-weight: 600;
   color: #94a3b8;
   text-align: center;
-  margin-top: 6px;
+  margin-top: 10 px;
   max-width: 65px;
   line-height: 1.2;
 }

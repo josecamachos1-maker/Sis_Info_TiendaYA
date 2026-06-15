@@ -13,15 +13,16 @@
   position: relative;
   display: flex;
   align-items: center;
+  border-radius: 30px;
 }
 
 /* lupa falso usando*/
 .search-input::before {
   content: "🔍"; 
   position: absolute;
-  left: 16px;
+  left: 30px;
   font-size: 14px;
-  color: #94a3b8; /* Gris apagado discreto */
+  color: #b8aa94; /* Gris apagado discreto */
   opacity: 0.7;
   pointer-events: none; /* Hace que no estorbe al dar clic */
 }
@@ -29,10 +30,10 @@
 /* Transformación radical del campo de texto de feo a premium */
 .search-input input {
   width: 100%;
-  padding: 12px 16px 12px 42px; /* 42px a la izquierda para dejarle espacio a la lupa */
+  padding: 12px 16px 12px 60px; /* 42px a la izquierda para dejarle espacio a la lupa */
   font-size: 14px;
   color: #554b33;
-  background-color: #f1f3f9; /* Fondo gris  */
+  background-color: #f1f1f9; /* Fondo gris  */
   border: 1px solid transparent; /* Sin bordes negros toscos */
   border-radius: 30px; /* Bordes ultra redondeados de píldora */
   outline: none;

@@ -31,11 +31,11 @@ export function HomeClientePage({ onNavigate, carrito = [], onActualizarCantidad
    const banners = [
   {
     titulo: "¡Nuevas bebidas!",
-    imagen: "/public/novedades.svg",
+    imagen: "/public/bebidas.svg",
   },
   {
     titulo: "Snacks más vendidos",
-    imagen: "/public/novedades.svg",
+    imagen: "/public/snacks.svg",
   },
   {
     titulo: "Ofertas especiales",
@@ -86,11 +86,19 @@ function anteriorBanner() {
     obtenerCatalogoHome();
   }, []);
 
-  const productosFiltrados = productos.filter((producto) =>
-    producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const productosFiltrados = productos.filter((producto) => {
+  const coincideBusqueda =
+    producto.nombre.toLowerCase().includes(busqueda.toLowerCase());
+
+  const coincideCategoria =
+    categoriaActiva === "Todas" ||
+    producto.categoria === categoriaActiva;
+
+  return coincideBusqueda && coincideCategoria;
+});
 
   const carritoSeguro = carrito || [];
+
   const [modoNoche, setModoNoche] = useState(false); 
   return (
     <main className={`home-cliente ${modoNoche ? "dark" : ""}`}>
@@ -110,9 +118,10 @@ function anteriorBanner() {
       <PaginaActualC titulo=" 🏠 Home" />
       
       <SearchBar busqueda={busqueda} setBusqueda={setBusqueda} />
-      <CategoriaTabs categoriaActiva={categoriaActiva}
+       <CategoriaTabs 
+        categoriaActiva={categoriaActiva}
         setCategoriaActiva={setCategoriaActiva}
-        />
+      />
 
       <section className="banner-novedades">
         <button className="banner-arrow" onClick={anteriorBanner} >

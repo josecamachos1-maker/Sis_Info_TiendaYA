@@ -17,9 +17,10 @@ type Props = {
   usuario: UsuarioLogueado;
   onNavigate: (pagina: string) => void;
   carrito: ItemCarrito[];
+  onPedidoFinalizado: () => void;
 };
 
-export function CheckoutClientePage({ usuario, onNavigate, carrito }: Props) {
+export function CheckoutClientePage({ usuario, onNavigate, carrito, onPedidoFinalizado }: Props) {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [direccion, setDireccion] = useState("");
@@ -68,8 +69,10 @@ const [enviando, setEnviando] = useState(false);
   productos: productosPedido,
 };
 
-    const pedidoCreado = await crearPedidoRapido(pedidoRapido);
-
+  const pedidoCreado = await crearPedidoRapido(pedidoRapido);
+   onPedidoFinalizado();
+   setTipoMensaje("exito");
+   setMensaje("Pedido realizado correctamente...");
    const limpiarTelefono = (valor: string) => valor.replace(/\D/g, "");
 
 const claveIds = `clientePedidosIds_${usuario.id}`;

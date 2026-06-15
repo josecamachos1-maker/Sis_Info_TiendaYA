@@ -42,10 +42,22 @@ export function ProductoCard({
 
     
         {cantidad > 0 && disponible ? (
-          <div className="contador">
-            <button onClick={onDisminuir}>-</button>
-            <span>{cantidad}</span>
-            <button onClick={onAumentar}>+</button>
+          <div className="contador-contenedor-barra">
+            <button 
+              type="button" 
+              className="btn-contador btn-menos" 
+              onClick={onDisminuir}
+            >
+              -
+            </button>
+            <span className="contador-numero">{cantidad}</span>
+            <button 
+              type="button" 
+              className="btn-contador btn-mas" 
+              onClick={onAumentar}
+            >
+              +
+            </button>
           </div>
         ) : (
           <button 

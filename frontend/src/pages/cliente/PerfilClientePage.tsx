@@ -15,14 +15,16 @@ import {
 
 type Props = {
   onNavigate: (pagina: string) => void;
+  onLogout: () => void;
 };
 
-export function PerfilClientePage({ onNavigate }: Props) {
+export function PerfilClientePage({ onNavigate, onLogout }: Props) {
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [direccion, setDireccion] = useState("");
+  const [mostrarLogout, setMostrarLogout] = useState(false);
 
-  // 🚀 NUEVO: Control de modo edición en interfaz
+
   const [editando, setEditando] = useState(false);
 
   useEffect(() => {
@@ -64,7 +66,8 @@ export function PerfilClientePage({ onNavigate }: Props) {
           direccion,
         }),
       }
-    );
+    )
+    console.log(response.status);
 
     if (!response.ok) {
       throw new Error();
@@ -78,14 +81,6 @@ export function PerfilClientePage({ onNavigate }: Props) {
     alert("Error al actualizar");
   }
 }
-
-  function manejarCerrarSesion() {
-    /* 🔌 CONEXIÓN BACKEND:
-       - Aquí se debe remover el Token de autenticación (localStorage.removeItem("token"), etc.)
-    */
-    alert("Sesión cerrada");
-    onNavigate("login"); // Te redirige a la pantalla de login o bienvenida
-  }
 
   return (
     <main className="perfil-cliente-page">
@@ -111,77 +106,76 @@ export function PerfilClientePage({ onNavigate }: Props) {
         </h1>
       </section>
 
-      {/* TARJETA INFO (Cambia dinámicamente si el usuario da clic en editar) */}
-      <section className={`perfil-tarjeta-gris ${editando ? "en-edicion" : ""}`}>
-        <div className="tarjeta-info-contenido" style={{ width: "100%" }}>
-          <strong>Información personal</strong>
-          
-          {editando ? (
-            <div className="inputs-edicion-perfil" style={{ display: "flex", flexDirection: "column", gap: "5px", marginTop: "8px" }}>
-              <input
-                type="text"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                placeholder="Nombre"
-              />
+      <h3>Información Personal</h3>
 
-              <input
-                type="text"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                placeholder="Teléfono"
-              />
+<div className="info-bloque">
+  <div className="info-bloque-texto">
+    <span className="info-label">Nombre</span>
+    <span className="info-valor">{nombre}</span>
+  </div>
 
-              <input
-                type="text"
-                value={direccion}
-                onChange={(e) => setDireccion(e.target.value)}
-                placeholder="Dirección"
-              />
-            </div>
-          ) : (
-            <>
-              <span className="tarjeta-subtexto">
-                +591 {telefono}
-              </span>
+  <button className="btn-editar-lapiz">
+    <Pencil size={18}/>
+  </button>
+</div>
 
-              <span className="tarjeta-subtexto">
-                {direccion}
-              </span>
-            </>
-          )}
-        </div>
+<div className="info-bloque">
+  <div className="info-bloque-texto">
+    <span className="info-label">Teléfono</span>
+    <span className="info-valor">{telefono}</span>
+  </div>
 
-        {editando ? (
-          <button className="btn-editar-lapiz btn-guardar-cambios" onClick={guardarCambios} style={{ backgroundColor: "#22c55e", color: "white" }}>
-            <Check size={18} />
-          </button>
-        ) : (
-          <button className="btn-editar-lapiz" onClick={() => setEditando(true)}>
-            <Pencil size={18} />
-          </button>
-        )}
-      </section>
+  <button className="btn-editar-lapiz">
+    <Pencil size={18}/>
+  </button>
+</div>
 
-      <section className="perfil-menu-opciones">
-        {/* DIRECCIONES */}
-        <div className="opcion-item">
-          <div className="opcion-izquierda">
-            <MapPin size={20} />
-            <span className="opcion-texto">Direcciones guardadas</span>
-          </div>
-          <button className="btn-editar-lapiz" onClick={() => onNavigate("direcciones-cliente")}>
-            <Pencil size={18} />
-          </button>
-        </div>      </section>      {/* LOGOUT */}
+<div className="info-bloque">
+  <div className="info-bloque-texto">
+    <span className="info-label">Dirección</span>
+    <span className="info-valor">{direccion}</span>
+  </div>
+
+  <button className="btn-editar-lapiz">
+    <Pencil size={18}/>
+  </button>
+</div>
+           {/* LOGOUT */}
       <footer className="perfil-footer-acciones">
-        <button className="btn-logout" onClick={manejarCerrarSesion}>
-          <LogOut size={18} />
-          <span>Cerrar sesión</span>
-        </button>
+       <button
+         className="btn-logout"
+         onClick={() => setMostrarLogout(true)}
+       >
+         <LogOut size={18} />
+         <span>Cerrar sesión</span>
+       </button>
       </footer>
-
-      {/* Navbar sincronizado */}
+      {mostrarLogout && (
+        <div className="modal-overlay">
+          <div className="modal-confirmacion">
+            <h3>¿Cerrar sesión?</h3>
+      
+            <p>
+              Tendrás que volver a iniciar sesión para acceder a tu cuenta.
+            </p>
+      
+            <div className="modal-botones">
+              <button
+                onClick={() => setMostrarLogout(false)}
+              >
+                Cancelar
+              </button>
+      
+              <button
+                onClick={onLogout}
+              >
+                Sí, cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <NavbarCliente paginaActiva="perfil" onNavigate={onNavigate} />
     </main>
   );

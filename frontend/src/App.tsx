@@ -74,7 +74,7 @@ function App() {
 
   const [vistaCliente, setVistaCliente] = useState<VistaCliente>("home");
   const [carritoCliente, setCarritoCliente] = useState<ItemCarrito[]>([]);
-
+  
   function cambiarVistaRepartidor(vista: string) {
   if (vista === "dashboard" || vista === "pedidos" || vista === "historial") {
     setVistaRepartidor(vista);
@@ -135,6 +135,9 @@ function actualizarCantidadCarrito(id: number, cambio: number) {
 function eliminarProductoCarrito(id: number) {
   setCarritoCliente((actual) => actual.filter((item) => item.id !== id));
 }
+function vaciarCarritoCliente() {
+  setCarritoCliente([]);
+}
 
 if (usuarioLogueado?.rol === "CLIENTE") {
   if (vistaCliente === "productos") {
@@ -154,6 +157,7 @@ if (usuarioLogueado?.rol === "CLIENTE") {
         carrito={carritoCliente}
         onActualizarCantidad={actualizarCantidadCarrito}
         onEliminarProducto={eliminarProductoCarrito}
+        onAgregarProducto={actualizarCantidadCliente}
       />
     );
   }
@@ -164,6 +168,7 @@ if (usuarioLogueado?.rol === "CLIENTE") {
       usuario={usuarioLogueado}
       onNavigate={navegarCliente}
       carrito={carritoCliente}
+      onPedidoFinalizado={vaciarCarritoCliente}
     />
   );
 }
@@ -177,8 +182,13 @@ if (usuarioLogueado?.rol === "CLIENTE") {
   );
 }
   if (vistaCliente === "perfil") {
-    return <PerfilClientePage onNavigate={navegarCliente} />;
-  }
+  return (
+    <PerfilClientePage
+      onNavigate={navegarCliente}
+      onLogout={cerrarSesion}
+    />
+  );
+}
 
   return (
     <HomeClientePage

@@ -60,6 +60,11 @@ const respuesta = await fetch("http://localhost:3000/v1/pedidos");
     }
 
     const datos = await respuesta.json();
+    console.log(
+      "DETALLE:",
+      JSON.stringify(datos[0].detalles, null, 2)
+     );
+    //  console.log("USUARIO LOGUEADO:", usuario);
     const pedidosDelCliente = datos.filter((pedido: any) => {
   const pedidoId = Number(pedido.id);
 
@@ -76,10 +81,20 @@ const respuesta = await fetch("http://localhost:3000/v1/pedidos");
     telefonoPedido !== "" && telefonosClienteActual.includes(telefonoPedido);
 
   const pertenecePorClienteId = Number(pedido.clienteId) === Number(usuario.id);
-
+  console.log({
+  pedidoId,
+  clienteIdPedido: pedido.clienteId,
+  usuarioId: usuario.id,
+  telefonoPedido,
+  idsClienteActual,
+  telefonosClienteActual,
+  pertenecePorId,
+  pertenecePorTelefono,
+  pertenecePorClienteId,
+});
   return pertenecePorId || pertenecePorTelefono || pertenecePorClienteId;
 });
-    const pedidosMapeados = pedidosDelCliente
+  const pedidosMapeados = pedidosDelCliente
   .map((pedido: any) => ({
     id: pedido.id,
     fecha: pedido.fechaHora || pedido.createdAt || pedido.updatedAt || "Sin fecha",
@@ -89,7 +104,13 @@ const respuesta = await fetch("http://localhost:3000/v1/pedidos");
       String(pedido.direccionEntrega || "").toLowerCase().includes("venta en tienda")
         ? "RECOJO"
         : "ENVIO",
+
+    productos: (pedido.detalles || []).map((detalle: any) => ({
+       nombre: detalle.productoNombre,
+       cantidad: detalle.cantidad,
+       precioSubtotal: detalle.subtotal,
   }))
+}))
   .sort((a: Pedido, b: Pedido) => {
     const fechaA = new Date(a.fecha).getTime();
     const fechaB = new Date(b.fecha).getTime();
@@ -229,14 +250,15 @@ useEffect(() => {
 
 {!cargando && pedidosFiltrados.map((pedido) => (
           <PedidoCard
-  key={pedido.id}
-  id={pedido.id}
-  fecha={pedido.fecha}
-  total={pedido.total}
-  estado={pedido.estado}
-  tipoEntrega={pedido.tipoEntrega}
-  onCancelar={manejarCancelarPedido}
-/>
+            key={pedido.id}
+            id={pedido.id}
+            fecha={pedido.fecha}
+            total={pedido.total}
+            estado={pedido.estado}
+            tipoEntrega={pedido.tipoEntrega}
+            productos={pedido.productos}
+            onCancelar={manejarCancelarPedido}
+          />
         ))}
       </section>
 

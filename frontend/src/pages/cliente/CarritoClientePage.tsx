@@ -13,9 +13,10 @@ type Props = {
   carrito?: ItemCarrito[];
   onActualizarCantidad?: (id: number, cambio: number) => void;
   onEliminarProducto?: (id: number) => void;
+  onAgregarProducto?: (producto: ItemCarrito, cambio: number) => void;
 };
 
-export function CarritoClientePage({ onNavigate, carrito = [], onActualizarCantidad, onEliminarProducto }: Props) {
+export function CarritoClientePage({ onNavigate, carrito = [], onActualizarCantidad, onEliminarProducto, onAgregarProducto}: Props) {
   const [busqueda, setBusqueda] = useState("");
   const [metodoPago, setMetodoPago] = useState("");
   const [productos, setProductos] = useState<any[]>([]);
@@ -56,6 +57,7 @@ export function CarritoClientePage({ onNavigate, carrito = [], onActualizarCanti
       </header>
 
       <PaginaActualC titulo="Carrito" />
+      
       <SearchBar busqueda={busqueda} setBusqueda={setBusqueda} />
       <section className="sugerencias-carrito">
         <h3>También podría gustarte</h3>
@@ -72,8 +74,18 @@ export function CarritoClientePage({ onNavigate, carrito = [], onActualizarCanti
                 cantidad={0}
                 variante="horizontal"
                 mostrarDisponibilidad={false}
-                onAumentar={() => {}}
-                onDisminuir={() => {}}
+                onAumentar={() => onAgregarProducto?.(
+                    {
+                      id: producto.id,
+                      nombre: producto.nombre,
+                      precio: producto.precio,
+                      imagen: producto.imagen,
+                      cantidad: 0,
+                    },
+                    1
+                  )
+                }
+                //onDisminuir={() => {}}
               />
             </div>
           ))}
@@ -114,10 +126,6 @@ export function CarritoClientePage({ onNavigate, carrito = [], onActualizarCanti
         <label className="metodo-item">
           <input type="radio" name="metodoPago" value="QR" checked={metodoPago === "QR"} onChange={(e) => setMetodoPago(e.target.value)} />
           <span>QR</span>
-        </label>
-        <label className="metodo-item">
-          <input type="radio" name="metodoPago" value="TARJETA" checked={metodoPago === "TARJETA"} onChange={(e) => setMetodoPago(e.target.value)} />
-          <span>Tarjeta</span>
         </label>
       </div>
       

@@ -11,12 +11,18 @@ export type EstadoPedido =
   | "CANCELADO"
   | "ENTREGA_FALLIDA";
 
+export type ProductoComprado = {
+  nombre: string;
+  cantidad: number;
+  precioSubtotal: number;
+};
+
 export type Pedido = {
   id: number;
   fecha: string;
   total: number;
-
   estado: EstadoPedido;
-
   tipoEntrega: TipoEntrega;
+
+  productos?: ProductoComprado[];
 };

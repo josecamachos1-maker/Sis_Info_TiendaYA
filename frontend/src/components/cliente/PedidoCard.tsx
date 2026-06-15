@@ -82,10 +82,20 @@ export function PedidoCard({
           <div className="pedido-productos">
             {listaProductos.map((prod, index) => (
               <div className="producto-mini" key={index}>
-                <span>
-                  {prod.cantidad}x {prod.nombre}
+                {/* 1ra Columna: Cantidad */}
+                <span className="producto-cantidad">
+                  {prod.cantidad}x
                 </span>
-                <strong>{prod.precioSubtotal} Bs.</strong>
+                
+                {/* 2da Columna: Nombre */}
+                <span className="producto-nombre">
+                  {prod.nombre}
+                </span>
+                
+                {/* 3ra Columna: Subtotal */}
+                <strong className="producto-subtotal">
+                  {prod.precioSubtotal} Bs.
+                </strong>
               </div>
             ))}
           </div>
