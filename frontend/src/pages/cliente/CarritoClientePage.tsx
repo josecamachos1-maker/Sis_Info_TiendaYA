@@ -57,13 +57,17 @@ export function CarritoClientePage({ onNavigate, carrito = [], onActualizarCanti
       </header>
 
       <PaginaActualC titulo="Carrito" />
-      
-      <SearchBar busqueda={busqueda} setBusqueda={setBusqueda} />
+
+        <SearchBar busqueda={busqueda} setBusqueda={setBusqueda} />
+
       <section className="sugerencias-carrito">
         <h3>También podría gustarte</h3>
       
         <div className="sugerencias-scroll">
-          {productos.slice(0, 10).map((producto) => (
+          {productos.filter((producto) =>
+            producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
+           ).slice(0, 10)
+           .map((producto) => (
             <div className="producto-sugerido" key={producto.id}>
               <ProductoCard
                 id={producto.id}
@@ -95,11 +99,7 @@ export function CarritoClientePage({ onNavigate, carrito = [], onActualizarCanti
       {productosEnCarrito.length === 0 && <p>Tu carrito está vacío</p>}
 
       <section className="productos-carrito">
-        {productosEnCarrito
-          .filter((producto) =>
-            producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
-          )
-          .map((producto) => (
+        {productosEnCarrito.map((producto) => (
             <CarritoItem
               key={producto.id}
               nombre={producto.nombre}

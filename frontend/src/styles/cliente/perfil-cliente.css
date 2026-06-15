@@ -5,7 +5,7 @@
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  background-color: #f9f2e3;
+  background-color: #f9f2e3; /* Fondo crema cálido */
   min-height: 100vh;
   padding: 16px 24px 120px 24px;
   box-sizing: border-box;
@@ -14,14 +14,27 @@
   flex-direction: column;
 }
 
+.cliente-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.perfil-seccion-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2b1810;
+  margin: 16px 0 12px 2px;
+}
+
 /* =======================================================
-   SECCIÓN AVATAR (CÍRCULO CON DEGRADADO Y CHECK VERDE)
+   SECCIÓN AVATAR
    ======================================================= */
 .perfil-avatar-seccion {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 24px 0;
+  margin: 16px 0 24px 0;
 }
 
 .avatar-contenedor {
@@ -31,7 +44,6 @@
   margin-bottom: 12px;
 }
 
-/* Círculo del avatar con el degradado cálido del Figma */
 .avatar-circulo {
   width: 100%;
   height: 100%;
@@ -40,18 +52,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ff7a00; /* Icono Lucide en tono naranja de la marca */
+  color: #ff7a00;
   box-shadow: 0 8px 24px rgba(255, 122, 0, 0.15);
   border: 3px solid #ffffff;
   box-sizing: border-box;
 }
 
-/* Emblema de verificación flotante (Check verde) */
 .avatar-check {
   position: absolute;
   bottom: 4px;
   right: 4px;
-  background-color: #22c55e; /* Verde brillante del Figma */
+  background-color: #22c55e;
   color: #ffffff;
   width: 26px;
   height: 26px;
@@ -64,192 +75,143 @@
 }
 
 .perfil-nombre-usuario {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: #2b1810;
   margin: 0;
 }
 
 /* =======================================================
-   TARJETA DE INFORMACIÓN PERSONAL (DEGRADADO LLAMATIVO)
+   TARJETAS BLANCAS DE INFORMACIÓN (info-bloque)
    ======================================================= */
-.perfil-tarjeta-gris {
-  background: linear-gradient(90deg, #ffedd5 0%, #fee2e2 100%); /* Degradado cálido suave */
-  border-radius: 18px;
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  border: 1px solid #ffdec2;
-  box-shadow: 0 6px 18px rgba(255, 122, 0, 0.06);
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-/* Efecto visual por si está en modo edición */
-.perfil-tarjeta-gris.en-edicion {
-  background: linear-gradient(90deg, #f0fdf4 0%, #dcfce7 100%);
-  border-color: #bbf7d0;
-}
-
-.tarjeta-info-contenido strong {
-  display: block;
-  font-size: 15px;
-  color: #2b1810;
-  margin-bottom: 6px;
-  font-weight: 700;
-}
-
-.tarjeta-subtexto {
-  display: block;
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 2px;
-}
-
-/* Campos de entrada cuando se activa la edición */
-.inputs-edicion-perfil input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ffd1b3;
-  border-radius: 8px;
-  font-size: 13px;
-  background-color: rgba(255, 255, 255, 0.8);
-  outline: none;
-  box-sizing: border-box;
-}
-
-/* =======================================================
-   MENÚ DE OPCIONES (LUCES INTERACTIVAS INDIVIDUALES)
-   ======================================================= */
-.perfil-menu-opciones {
-  display: flex;
-  flex-direction: column;
-  gap: 14px; /* Espaciado entre bloques sueltos estilo Figma */
-  margin-bottom: 32px;
-}
 .info-bloque {
-  background: white;
-  border-radius: 16px;
-  padding: 14px;
-  margin-bottom: 12px;
-
+  background: #ffffff;
+  border-radius: 20px; /* Bordes super redondeados y limpios */
+  padding: 16px 20px;
+  margin-bottom: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  box-shadow: 0 3px 12px rgba(0,0,0,.05);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .info-bloque-texto {
   display: flex;
   flex-direction: column;
+  flex: 1; /* Permite que el input o texto use todo el ancho interno */
 }
 
 .info-label {
   font-size: 12px;
-  color: #64748b;
+  font-weight: 500;
+  color: #8e8e93;
+  margin-bottom: 4px;
+}
+
+/* Label con el mapa integrado de Lucide */
+.info-label-mappin {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #8e8e93;
+}
+
+.info-label-mappin svg {
+  color: #1900ff; 
 }
 
 .info-valor {
   font-size: 15px;
   font-weight: 600;
-  color: #1e293b;
+  color: #1c1c1e;
+  word-break: break-all;
 }
-/* Contenedor base de cada fila de opción */
-.opcion-item {
-  background-color: #ffffff;
-  border-radius: 14px;
-  padding: 14px 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.opcion-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-}
-
-.opcion-izquierda {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.opcion-texto {
-  font-size: 14px;
-  font-weight: 600;
-  color: #475569;
-}
-
-/* --- ASIGNACIÓN DE COLORES INDIVIDUALES A LOS ICONOS (FIGMA) ---
-
-/* 📍 1. Direcciones guardadas (Borde y detalles azules) */
-/* .opcion-item:nth-child(1) {
-  border-bottom: 3px solid #3b82f6; 
-}
-.opcion-item:nth-child(1) .opcion-izquierda svg {
-  color: #3b82f6;
-}
-
-/* 💳 2. Métodos de pago (Borde y detalles verdes) */
-.opcion-item:nth-child(2) {
-  border-bottom: 3px solid #22c55e;
-}
-.opcion-item:nth-child(2) .opcion-izquierda svg {
-  color: #22c55e;
-}
-
-/* 🔔 3. Historial de notificaciones (Borde y detalles morados) */
-.opcion-item:nth-child(3) {
-  border-bottom: 3px solid #a855f7;
-}
-.opcion-item:nth-child(3) .opcion-izquierda svg {
-  color: #a855f7;
-} 
 
 /* =======================================================
-   BOTONES Y ACCIONES (BOTÓN DE LÁPIZ Y BOTÓN CERRAR SESIÓN)
+   INPUTS DE EDICIÓN ESTILIZADOS CORREGIDOS
    ======================================================= */
+.perfil-input-edicion {
+  width: 95%;
+  border: none;
+  border-bottom: 2px solid #ff7a00; /* Línea inferior naranja fluida */
+  padding: 6px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c1c1e;
+  background: transparent;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+}
 
-/* Estilización de los botones circulares transparentes con lápiz */
+/* =======================================================
+   BOTONES DE EDICIÓN (LÁPIZ Y NUEVO BOTÓN COMPACTO GUARDAR)
+   ======================================================= */
 .btn-editar-lapiz {
   background: transparent;
   border: none;
-  color: #64748b;
+  color: #a2a2a7;
   cursor: pointer;
-  padding: 6px;
+  padding: 8px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .btn-editar-lapiz:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: #1e293b;
+  background-color: #f2f2f7;
+  color: #ff7a00;
 }
 
-/* Botón flotante para guardar cambios (Check Verde) */
-.btn-guardar-cambios {
-  width: 32px;
-  height: 32px;
-  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
+/* Contenedor exclusivo para centrar el Guardar Cambios */
+.perfil-acciones-contenedor {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 24px 0;
 }
 
+/* Botón elegante de Guardar Cambios moderno */
+.btn-guardar-cambios-nuevo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #22c55e; /* Verde éxito uniforme */
+  color: #ffffff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-guardar-cambios-nuevo:hover {
+  background-color: #16a34a;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+}
+
+/* =======================================================
+   BOTÓN LOGOUT Y MODAL
+   ======================================================= */
 .perfil-footer-acciones {
-  margin-top: auto; /* Empuja el botón hacia la parte inferior */
-  padding: 0 8px;
+  margin-top: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .btn-logout {
   width: 100%;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff4d4d 100%); /* Rojo enérgico del Figma */
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff4d4d 100%);
   color: #ffffff;
   border: none;
   padding: 14px;
@@ -261,50 +223,71 @@
   justify-content: center;
   gap: 10px;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(255, 77, 77, 0.4); /* Sombra roja difuminada */
+  box-shadow: 0 6px 20px rgba(255, 77, 77, 0.3);
   transition: all 0.2s ease;
 }
+
+.btn-logout:hover {
+  background: linear-gradient(135deg, #ff4d4d 0%, #e63939 100%);
+  transform: translateY(-1px);
+}
+
+/* MODAL DE CONFIRMACIÓN */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  padding: 20px;
 }
 
 .modal-confirmacion {
-  background: white;
+  background: #ffffff;
   padding: 24px;
-  border-radius: 20px;
-  width: 320px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 320px;
   text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .modal-confirmacion h3 {
-  margin-bottom: 10px;
+  margin: 0 0 8px 0;
+  color: #1c1c1e;
+  font-size: 18px;
+}
+
+.modal-confirmacion p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
 }
 
 .modal-botones {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 12px;
 }
 
 .modal-botones button {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
 }
-.btn-logout:hover {
-  background: linear-gradient(135deg, #ff4d4d 0%, #e63939 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(255, 77, 77, 0.5);
+
+.btn-modal-cancelar {
+  background-color: #f2f2f7;
+  color: #48484a;
 }
 
-.btn-logout span {
-  font-weight: 700;
+.btn-modal-confirmar {
+  background-color: #ff4d4d;
+  color: #ffffff;
 }

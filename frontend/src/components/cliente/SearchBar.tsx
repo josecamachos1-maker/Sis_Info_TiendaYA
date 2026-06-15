@@ -12,22 +12,14 @@ export function SearchBar({
 
   return (
     <section className="searchbar">
-
       <div className="search-input">
-
         <input
           type="text"
           placeholder="Buscar productos..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
-
       </div>
-
-      <button className="btn-buscar">
-        Buscar
-      </button>
-
     </section>
   );
 }

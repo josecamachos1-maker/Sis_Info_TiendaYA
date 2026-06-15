@@ -1,57 +1,66 @@
-/* Contenedor principal de la barra de búsqueda */
+/* =======================================================
+   CONTENEDOR PRINCIPAL (La cápsula blanca exterior)
+   ======================================================= */
 .searchbar {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  gap: 0; 
-  height: 40px;
+  width: 100%;
+  background-color: #ffffff; /* Fondo blanco fino */
+  border-radius: 30px;
+  padding: 4px 6px; /* 🎯 Esto controla el grosor exacto del borde blanco */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  height: auto; /* Permite que colapse al tamaño real del input */
 }
 
-/* El contenedor del input se expande */
+/* =======================================================
+   CONTENEDOR DEL INPUT (Maneja la lupa)
+   ======================================================= */
 .search-input {
   flex: 1;
   position: relative;
   display: flex;
   align-items: center;
-  border-radius: 30px;
+  width: 100%;
 }
 
-/* lupa falso usando*/
+/* 🔍 LUPA INTEGRADA SUTIL */
 .search-input::before {
   content: "🔍"; 
   position: absolute;
-  left: 30px;
-  font-size: 14px;
-  color: #b8aa94; /* Gris apagado discreto */
+  left: 14px; 
+  font-size: 13px;
+  color: #b8aa94; 
   opacity: 0.7;
-  pointer-events: none; /* Hace que no estorbe al dar clic */
+  pointer-events: none; 
+  z-index: 2;
 }
 
-/* Transformación radical del campo de texto de feo a premium */
+/* =======================================================
+   EL CAMPO DE TEXTO GRIS (Controla la altura esbelta)
+   ======================================================= */
 .search-input input {
   width: 100%;
-  padding: 12px 16px 12px 60px; /* 42px a la izquierda para dejarle espacio a la lupa */
-  font-size: 14px;
+  height: 36px; /* 🎯 Altura perfecta, ni muy gorda ni muy delgada */
+  margin: 0;
+  padding: 0 14px 0 38px; /* Espacio para que el texto no pise la lupa */
+  font-size: 13px;
   color: #554b33;
-  background-color: #f1f1f9; /* Fondo gris  */
-  border: 1px solid transparent; /* Sin bordes negros toscos */
-  border-radius: 30px; /* Bordes ultra redondeados de píldora */
+  background-color: #f1f1f9; /* Fondo gris suave interno */
+  border: none; 
+  border-radius: 24px; 
   outline: none;
   font-family: inherit;
-  transition: all 0.2s ease;
-}
-/* Efecto muy sutil cuando el usuario hace clic para escribir */
-.search-input input:focus {
-  background-color: #f0eae2; /* Se oscurece un penique de forma elegante */
-  border-color: #e1d7cb;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease;
 }
 
-/* Marcador de posición (Placeholder) sutil */
+/* Efecto elegante al hacer foco */
+.search-input input:focus {
+  background-color: #f0eae2; 
+}
+
+/* Color del texto de sugerencia */
 .search-input input::placeholder {
   color: #94a3b8;
-  opacity: 0.8;
-}
-
-.btn-buscar {
-  display: none !important;
 }

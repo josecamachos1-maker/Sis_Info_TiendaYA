@@ -82,101 +82,140 @@ export function PerfilClientePage({ onNavigate, onLogout }: Props) {
   }
 }
 
-  return (
-    <main className="perfil-cliente-page">
-      <header className="cliente-header">
-        <Logo width="260px" />
-      </header>
+return (
+  <main className="perfil-cliente-page">
+    <header className="cliente-header">
+      <Logo width="260px" />
+    </header>
 
-      <PaginaActualC titulo="Perfil" />
+    <PaginaActualC titulo="Perfil" />
 
-      {/* AVATAR */}
-      <section className="perfil-avatar-seccion">
-        <div className="avatar-contenedor">
-          <div className="avatar-circulo">
-            <UserRound size={50} />
-          </div>
-          <div className="avatar-check">
-            <BadgeCheck size={18} />
-          </div>
+    {/* AVATAR */}
+    <section className="perfil-avatar-seccion">
+      <div className="avatar-contenedor">
+        <div className="avatar-circulo">
+          <UserRound size={50} />
         </div>
-
-        <h1 className="perfil-nombre-usuario">
-          {nombre}
-        </h1>
-      </section>
-
-      <h3>Información Personal</h3>
-
-<div className="info-bloque">
-  <div className="info-bloque-texto">
-    <span className="info-label">Nombre</span>
-    <span className="info-valor">{nombre}</span>
-  </div>
-
-  <button className="btn-editar-lapiz">
-    <Pencil size={18}/>
-  </button>
-</div>
-
-<div className="info-bloque">
-  <div className="info-bloque-texto">
-    <span className="info-label">Teléfono</span>
-    <span className="info-valor">{telefono}</span>
-  </div>
-
-  <button className="btn-editar-lapiz">
-    <Pencil size={18}/>
-  </button>
-</div>
-
-<div className="info-bloque">
-  <div className="info-bloque-texto">
-    <span className="info-label">Dirección</span>
-    <span className="info-valor">{direccion}</span>
-  </div>
-
-  <button className="btn-editar-lapiz">
-    <Pencil size={18}/>
-  </button>
-</div>
-           {/* LOGOUT */}
-      <footer className="perfil-footer-acciones">
-       <button
-         className="btn-logout"
-         onClick={() => setMostrarLogout(true)}
-       >
-         <LogOut size={18} />
-         <span>Cerrar sesión</span>
-       </button>
-      </footer>
-      {mostrarLogout && (
-        <div className="modal-overlay">
-          <div className="modal-confirmacion">
-            <h3>¿Cerrar sesión?</h3>
-      
-            <p>
-              Tendrás que volver a iniciar sesión para acceder a tu cuenta.
-            </p>
-      
-            <div className="modal-botones">
-              <button
-                onClick={() => setMostrarLogout(false)}
-              >
-                Cancelar
-              </button>
-      
-              <button
-                onClick={onLogout}
-              >
-                Sí, cerrar sesión
-              </button>
-            </div>
-          </div>
+        <div className="avatar-check">
+          <BadgeCheck size={18} />
         </div>
+      </div>
+
+      <h1 className="perfil-nombre-usuario">
+        {nombre}
+      </h1>
+    </section>
+
+    <h3 className="perfil-seccion-titulo">Información Personal</h3>
+
+    {/* BLOQUE: NOMBRE */}
+    <div className="info-bloque">
+      <div className="info-bloque-texto">
+        <span className="info-label">Nombre</span>
+        {editando ? (
+          <input
+            type="text"
+            className="perfil-input-edicion"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+          />
+        ) : (
+          <span className="info-valor">{nombre}</span>
+        )}
+      </div>
+      
+      {!editando && (
+        <button className="btn-editar-lapiz" onClick={() => setEditando(true)}>
+          <Pencil size={18}/>
+        </button>
       )}
-      
-      <NavbarCliente paginaActiva="perfil" onNavigate={onNavigate} />
-    </main>
-  );
+    </div>
+    
+    {/* BLOQUE: TELÉFONO */}
+    <div className="info-bloque">
+      <div className="info-bloque-texto">
+        <span className="info-label">Teléfono</span>
+        {editando ? (
+          <input
+            type="text"
+            className="perfil-input-edicion"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
+          />
+        ) : (
+          <span className="info-valor">{telefono}</span>
+        )}
+      </div>
+    
+      {!editando && (
+        <button className="btn-editar-lapiz" onClick={() => setEditando(true)}>
+          <Pencil size={18}/>
+        </button>
+      )}
+    </div>
+    
+    {/* BLOQUE: DIRECCIÓN */}
+    <div className="info-bloque">
+      <div className="info-bloque-texto">
+        <span className="info-label info-label-mappin">
+          <MapPin size={14} /> Dirección
+        </span>
+        {editando ? (
+          <input
+            type="text"
+            className="perfil-input-edicion"
+            value={direccion}
+            onChange={(e) => setDireccion(e.target.value)}
+          />
+        ) : (
+          <span className="info-valor">{direccion || "No especificada"}</span>
+        )}
+      </div>
+    
+      {!editando && (
+        <button className="btn-editar-lapiz" onClick={() => setEditando(true)}>
+          <Pencil size={18}/>
+        </button>
+      )}
+    </div>
+
+    {/* SECCIÓN ACCIONES: GUARDAR CAMBIOS (Aparece abajo centrado y estilizado) */}
+    {editando && (
+      <div className="perfil-acciones-contenedor">
+        <button className="btn-guardar-cambios-nuevo" onClick={guardarCambios}>
+          <Check size={18}/>
+          <span>Guardar cambios</span>
+        </button>
+      </div>
+    )}  
+
+    {/* BOTÓN CERRAR SESIÓN */}
+    <footer className="perfil-footer-acciones">
+      <button className="btn-logout" onClick={() => setMostrarLogout(true)}>
+        <LogOut size={18} />
+        <span>Cerrar sesión</span>
+      </button>
+    </footer>
+
+    {/* MODAL DE CONFIRMACIÓN */}
+    {mostrarLogout && (
+      <div className="modal-overlay">
+        <div className="modal-confirmacion">
+          <h3>¿Cerrar sesión?</h3>
+          <p>Tendrás que volver a iniciar sesión para acceder a tu cuenta.</p>
+          <div className="modal-botones">
+            <button className="btn-modal-cancelar" onClick={() => setMostrarLogout(false)}>
+              Cancelar
+            </button>
+            <button className="btn-modal-confirmar" onClick={onLogout}>
+              Sí, cerrar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    
+    <NavbarCliente paginaActiva="perfil" onNavigate={onNavigate} />
+  </main>
+);
 }
