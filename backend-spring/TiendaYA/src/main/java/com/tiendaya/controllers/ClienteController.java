@@ -94,4 +94,40 @@ public class ClienteController {
         }
         return ResponseEntity.ok(cliente.get());
     }
+    //Actualiza el perfil del cliente. Solo se pueden actualizar nombre, teléfono y dirección. El campo activo no se puede actualizar desde esta ruta.
+    @PutMapping("/perfil/{id}")
+public ResponseEntity<?> actualizarPerfil(
+        @PathVariable Integer id,
+        @RequestBody Cliente clienteActualizado
+) {
+    Optional<Cliente> clienteOptional = clienteService.getCliente(id);
+    
+    if (clienteOptional.isEmpty()) {
+        return ResponseEntity.status(404)
+                .body(new MessageDto("El cliente con id " + id + " no existe"));
+    }
+    
+    Cliente cliente = clienteOptional.get();
+    
+    if (clienteActualizado.getNombre() != null) {
+        cliente.setNombre(clienteActualizado.getNombre());
+    }
+    if (clienteActualizado.getTelefono() != null) {
+        cliente.setTelefono(clienteActualizado.getTelefono());
+    }
+    if (clienteActualizado.getDireccion() != null) {
+        cliente.setDireccion(clienteActualizado.getDireccion());
+    }
+     // Guardar los cambios
+    Cliente clienteGuardado = clienteService.updateCliente(id, 
+        new com.tiendaya.dtos.UpdateClienteDto(
+            cliente.getNombre(),
+            cliente.getTelefono(),
+            cliente.getDireccion(),
+            cliente.getActivo()
+        )
+    ).orElseThrow(() -> new RuntimeException("Error al actualizar"));
+    
+    return ResponseEntity.ok(clienteGuardado);
+}
 }
