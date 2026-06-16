@@ -3,6 +3,8 @@ package com.tiendaya.controllers;
 import com.tiendaya.dtos.CreatePedidoDto;
 import com.tiendaya.dtos.MessageDto;
 import com.tiendaya.models.Cliente;
+import com.tiendaya.dtos.CreateClienteDto;
+import com.tiendaya.dtos.UpdateClienteDto;
 import com.tiendaya.models.Producto;
 import com.tiendaya.models.Pedido;
 import com.tiendaya.services.ClienteService;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/clientes")
+@RequestMapping({"/api/clientes", "/v1/clientes"})
 @CrossOrigin(origins = "http://localhost:5173")
 public class ClienteController {
 
@@ -29,6 +31,63 @@ public class ClienteController {
         this.clienteService = clienteService;
         this.productoService = productoService;
         this.pedidoService = pedidoService;
+    }
+
+    // ========== CLIENTES ==========
+
+    @GetMapping
+    public ResponseEntity<List<Cliente>> getClientes() {
+        List<Cliente> clientes = clienteService.getClientes();
+        return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCliente(@PathVariable Integer id) {
+        Optional<Cliente> cliente = clienteService.getCliente(id);
+
+        if (cliente.isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(new MessageDto("El cliente con id " + id + " no existe"));
+        }
+
+        return ResponseEntity.ok(cliente.get());
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createCliente(@RequestBody CreateClienteDto dto) {
+        try {
+            Cliente cliente = clienteService.createCliente(dto);
+            return ResponseEntity.status(201).body(cliente);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(new MessageDto(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCliente(
+            @PathVariable Integer id,
+            @RequestBody UpdateClienteDto dto
+    ) {
+        Optional<Cliente> cliente = clienteService.updateCliente(id, dto);
+
+        if (cliente.isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(new MessageDto("El cliente con id " + id + " no existe"));
+        }
+
+        return ResponseEntity.ok(cliente.get());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCliente(@PathVariable Integer id) {
+        Optional<Cliente> cliente = clienteService.deleteCliente(id);
+
+        if (cliente.isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(new MessageDto("El cliente con id " + id + " no existe"));
+        }
+
+        return ResponseEntity.ok(new MessageDto("Cliente desactivado correctamente"));
     }
 
     // ========== PRODUCTOS ==========
